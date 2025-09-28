@@ -1,0 +1,35 @@
+# ChartQA Benchmark Configuration
+# Note: This uses the generic VisualQATask. A specialized ChartQATask
+# could be implemented for better handling of chart-specific data.
+
+benchmark:
+  name: "specialized/chartqa"
+  version: "1.0"
+  description: "Question answering on charts."
+  category: "specialized"
+  paper: "Masry et al., 2022"
+  official_url: "https://github.com/vis-nlp/ChartQA"
+
+dataset:
+  name: "chartqa"
+  source: "huggingface"
+  path: "HuggingFaceM4/ChartQA"
+  cache_dir: "/root/benchmarks/universal-model-benchmarks/datasets/cache"
+
+subtasks:
+  - name: "default"
+    task_type: "visual_qa"
+    dataset_config: "default"
+    metrics: ["exact_match"] # Official metric is Relaxed Accuracy
+    input_columns: ["image", "question"]
+    label_column: "answer"
+
+evaluation:
+  batch_size: 8
+  use_cache: true
+
+output:
+  format: "json"
+  save_raw_predictions: false
+  aggregate_subtasks: false
+  output_dir: "/root/benchmarks/universal-model-benchmarks/results/raw"
