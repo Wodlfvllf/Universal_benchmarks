@@ -1,0 +1,12 @@
+benchmark:
+  name: "HumanEval"
+  task_type: "code_generation"
+  
+evaluation:
+  num_samples: 100  # for pass@k
+  temperature: 0.8
+  max_tokens: 512
+  metrics: ["pass@1", "pass@10", "pass@100"]
+  execution:
+    timeout: 5
+    sandbox: true

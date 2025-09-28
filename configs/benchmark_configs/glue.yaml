@@ -1,0 +1,90 @@
+benchmark:
+  name: "GLUE"
+  version: "1.0"
+  description: "General Language Understanding Evaluation"
+  category: "llm"
+  paper: "Wang et al., 2018"
+  official_url: "https://gluebenchmark.com/"
+
+dataset:
+  source: "huggingface"
+  path: "nyu-mll/glue"
+  cache_dir: "${CACHE_DIR}/datasets/glue"
+  
+subtasks:
+  - name: "cola"
+    task_type: "classification"
+    dataset_config: "cola"
+    metrics: ["matthews_correlation", "accuracy"]
+    input_columns: ["sentence"]
+    label_column: "label"
+    
+  - name: "sst2"
+    task_type: "classification"
+    dataset_config: "sst2"
+    metrics: ["accuracy", "f1"]
+    input_columns: ["sentence"]
+    label_column: "label"
+    
+  - name: "mrpc"
+    task_type: "sequence_pair_classification"
+    dataset_config: "mrpc"
+    metrics: ["accuracy", "f1"]
+    input_columns: ["sentence1", "sentence2"]
+    label_column: "label"
+    
+  - name: "stsb"
+    task_type: "regression"
+    dataset_config: "stsb"
+    metrics: ["pearson", "spearman"]
+    input_columns: ["sentence1", "sentence2"]
+    label_column: "label"
+    
+  - name: "qqp"
+    task_type: "sequence_pair_classification"
+    dataset_config: "qqp"
+    metrics: ["accuracy", "f1"]
+    input_columns: ["question1", "question2"]
+    label_column: "label"
+    
+  - name: "mnli"
+    task_type: "nli"
+    dataset_config: "mnli"
+    metrics: ["accuracy"]
+    input_columns: ["premise", "hypothesis"]
+    label_column: "label"
+    validation_sets: ["validation_matched", "validation_mismatched"]
+    
+  - name: "qnli"
+    task_type: "sequence_pair_classification"
+    dataset_config: "qnli"
+    metrics: ["accuracy"]
+    input_columns: ["question", "sentence"]
+    label_column: "label"
+    
+  - name: "rte"
+    task_type: "nli"
+    dataset_config: "rte"
+    metrics: ["accuracy"]
+    input_columns: ["sentence1", "sentence2"]
+    label_column: "label"
+    
+  - name: "wnli"
+    task_type: "nli"
+    dataset_config: "wnli"
+    metrics: ["accuracy"]
+    input_columns: ["sentence1", "sentence2"]
+    label_column: "label"
+
+evaluation:
+  batch_size: 32
+  max_sequence_length: 512
+  num_workers: 4
+  use_cache: true
+  cache_predictions: true
+  
+output:
+  format: "json"
+  save_raw_predictions: true
+  save_per_sample_metrics: false
+  aggregate_subtasks: true

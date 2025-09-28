@@ -1,0 +1,13 @@
+benchmark:
+  name: "VQAv2"
+  task_type: "visual_qa"
+  
+dataset:
+  images_source: "local"
+  images_path: "${DATA_DIR}/vqa/images"
+  questions_source: "huggingface"
+  
+evaluation:
+  image_encoder: "clip"
+  answer_type: "open_ended"
+  metrics: ["vqa_accuracy", "answerability"]
