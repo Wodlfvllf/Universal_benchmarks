@@ -1,7 +1,7 @@
 from tasks.base import BaseTask, TaskInput, TaskOutput
 from typing import List, Dict, Any
 
-class VisualQATask(BaseTask):
+class TokenClassificationTask(BaseTask):
     def setup(self):
         pass
     def prepare_inputs(self, dataset: Any, **kwargs) -> List[TaskInput]:
