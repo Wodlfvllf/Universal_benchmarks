@@ -1,0 +1,45 @@
+benchmark:
+  name: "SuperGLUE"
+  version: "1.0"
+  description: "SuperGLUE Benchmark"
+  category: "llm"
+  paper: "Wang et al., 2019"
+  official_url: "https://super.gluebenchmark.com/"
+
+dataset:
+  source: "huggingface"
+  path: "super_glue"
+  cache_dir: "${CACHE_DIR}/datasets/super_glue"
+
+subtasks:
+  - name: "boolq"
+    task_type: "classification"
+    dataset_config: "boolq"
+    metrics: ["accuracy"]
+    input_columns: ["question", "passage"]
+    label_column: "label"
+  - name: "cb"
+    task_type: "classification"
+    dataset_config: "cb"
+    metrics: ["accuracy", "f1"]
+    input_columns: ["premise", "hypothesis"]
+    label_column: "label"
+  - name: "copa"
+    task_type: "multiple_choice"
+    dataset_config: "copa"
+    metrics: ["accuracy"]
+    input_columns: ["premise", "choice1", "choice2"]
+    label_column: "label"
+
+evaluation:
+  batch_size: 16
+  max_sequence_length: 512
+  num_workers: 4
+  use_cache: true
+  cache_predictions: true
+
+output:
+  format: "json"
+  save_raw_predictions: true
+  save_per_sample_metrics: false
+  aggregate_subtasks: true
