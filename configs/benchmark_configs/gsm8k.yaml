@@ -1,0 +1,33 @@
+benchmark:
+  name: "GSM8K"
+  version: "1.0"
+  description: "Grade School Math 8K"
+  category: "llm"
+  paper: "Cobbe et al., 2021"
+  official_url: "https://github.com/openai/grade-school-math"
+
+dataset:
+  source: "huggingface"
+  path: "gsm8k"
+  cache_dir: "${CACHE_DIR}/datasets/gsm8k"
+
+subtasks:
+  - name: "main"
+    task_type: "generative_qa"
+    dataset_config: "main"
+    metrics: ["accuracy"]
+    input_columns: ["question"]
+    label_column: "answer"
+
+evaluation:
+  batch_size: 16
+  max_sequence_length: 512
+  num_workers: 4
+  use_cache: true
+  cache_predictions: true
+
+output:
+  format: "json"
+  save_raw_predictions: true
+  save_per_sample_metrics: false
+  aggregate_subtasks: true
