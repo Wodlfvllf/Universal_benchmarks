@@ -1,0 +1,65 @@
+# SuperGLUE Benchmark Configuration
+# Note: This configuration simplifies some tasks and omits others (e.g., ReCoRD)
+# that require task types not yet implemented (e.g., Extractive QA).
+
+benchmark:
+  name: "llm/superglue"
+  version: "1.0"
+  description: "Super General Language Understanding Evaluation"
+  category: "llm"
+  paper: "Wang et al., 2019"
+  official_url: "https://super.gluebenchmark.com/"
+
+dataset:
+  name: "super_glue"
+  source: "huggingface"
+  path: "super_glue"
+  cache_dir: "/root/benchmarks/universal-model-benchmarks/datasets/cache"
+
+subtasks:
+  - name: "boolq"
+    task_type: "classification"
+    dataset_config: "boolq"
+    metrics: ["accuracy"]
+    input_columns: ["question", "passage"]
+    label_column: "label"
+
+  - name: "cb"
+    task_type: "classification"
+    dataset_config: "cb"
+    metrics: ["accuracy", "f1"]
+    input_columns: ["premise", "hypothesis"]
+    label_column: "label"
+
+  - name: "copa"
+    task_type: "multiple_choice"
+    dataset_config: "copa"
+    metrics: ["accuracy"]
+    # The COPA task requires special formatting not fully supported by the basic MC task yet.
+    # This is a simplified representation.
+    input_columns: ["premise", "choice1", "choice2"]
+    label_column: "label"
+
+  - name: "rte"
+    task_type: "classification"
+    dataset_config: "rte"
+    metrics: ["accuracy"]
+    input_columns: ["premise", "hypothesis"]
+    label_column: "label"
+
+  - name: "wic"
+    task_type: "classification"
+    dataset_config: "wic"
+    metrics: ["accuracy"]
+    input_columns: ["sentence1", "sentence2", "word"]
+    label_column: "label"
+
+evaluation:
+  batch_size: 8
+  use_cache: true
+
+output:
+  format: "json"
+  save_raw_predictions: true
+  aggregate_subtasks: true
+  output_dir: "/root/benchmarks/universal-model-benchmarks/results/raw"
