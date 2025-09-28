@@ -1,0 +1,57 @@
+# MMLU (Massive Multitask Language Understanding) Benchmark Configuration
+# Note: This is a subset of the 57 subjects available in MMLU.
+
+benchmark:
+  name: "llm/mmlu"
+  version: "1.0"
+  description: "A massive multitask test for language models."
+  category: "llm"
+  paper: "Hendrycks et al., 2020"
+  official_url: "https://github.com/hendrycks/test"
+
+dataset:
+  name: "mmlu"
+  source: "huggingface"
+  path: "cais/mmlu"
+  cache_dir: "/root/benchmarks/universal-model-benchmarks/datasets/cache"
+
+subtasks:
+  - name: "abstract_algebra"
+    task_type: "multiple_choice"
+    dataset_config: "abstract_algebra"
+    metrics: ["accuracy"]
+    input_columns: ["question", "choices"]
+    label_column: "answer"
+
+  - name: "anatomy"
+    task_type: "multiple_choice"
+    dataset_config: "anatomy"
+    metrics: ["accuracy"]
+    input_columns: ["question", "choices"]
+    label_column: "answer"
+
+  - name: "computer_security"
+    task_type: "multiple_choice"
+    dataset_config: "computer_security"
+    metrics: ["accuracy"]
+    input_columns: ["question", "choices"]
+    label_column: "answer"
+
+  - name: "high_school_us_history"
+    task_type: "multiple_choice"
+    dataset_config: "high_school_us_history"
+    metrics: ["accuracy"]
+    input_columns: ["question", "choices"]
+    label_column: "answer"
+
+evaluation:
+  batch_size: 4 # MMLU prompts can be long
+  use_cache: true
+  # Few-shot prompting is recommended for MMLU, but requires a more advanced runner.
+  # few_shot_examples: 5 
+
+output:
+  format: "json"
+  save_raw_predictions: false
+  aggregate_subtasks: true
+  output_dir: "/root/benchmarks/universal-model-benchmarks/results/raw"
