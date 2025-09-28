@@ -1,0 +1,33 @@
+# MMLU-Pro Benchmark Configuration
+
+benchmark:
+  name: "advanced/mmlu_pro"
+  version: "1.0"
+  description: "An enhanced version of MMLU with 10 choices and reasoning."
+  category: "advanced"
+  paper: "Wang et al., 2024"
+  official_url: "https://github.com/TIGER-AI-Lab/MMLU-Pro"
+
+dataset:
+  name: "mmlu-pro"
+  source: "huggingface"
+  path: "TIGER-Lab/MMLU-Pro"
+  cache_dir: "/root/benchmarks/universal-model-benchmarks/datasets/cache"
+
+subtasks:
+  - name: "default"
+    task_type: "multiple_choice"
+    dataset_config: "default"
+    metrics: ["accuracy"]
+    input_columns: ["question", "options"]
+    label_column: "answer"
+
+evaluation:
+  batch_size: 2
+  use_cache: true
+
+output:
+  format: "json"
+  save_raw_predictions: false
+  aggregate_subtasks: false
+  output_dir: "/root/benchmarks/universal-model-benchmarks/results/raw"
