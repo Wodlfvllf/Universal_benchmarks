@@ -2,6 +2,7 @@ import numpy as np
 from typing import List, Dict, Any, Optional
 from ..base import BaseTask, TaskInput, TaskOutput
 from sklearn.preprocessing import LabelEncoder
+from .metrics import compute_classification_metrics
 
 class ClassificationTask(BaseTask):
     """Implementation for text classification tasks"""
@@ -99,28 +100,8 @@ class ClassificationTask(BaseTask):
         return TaskOutput(predictions=prediction)
 
     def compute_metrics(self, predictions: List[TaskOutput], 
-                       references: List[Any]) -> Dict[str, float]:
-        """Compute classification metrics"""
-        from sklearn.metrics import accuracy_score, f1_score, precision_recall_fscore_support
-
+                       references: List[TaskInput]) -> Dict[str, float]:
+        """Compute classification metrics using the dedicated metrics module."""
         preds = [p.predictions for p in predictions]
         refs = [r.labels for r in references]
-
-        metrics = {
-            'accuracy': accuracy_score(refs, preds)
-        }
-
-        if self.num_labels == 2:
-            # Binary classification
-            metrics['f1'] = f1_score(refs, preds, average='binary')
-            precision, recall, f1, _ = precision_recall_fscore_support(
-                refs, preds, average='binary'
-            )
-            metrics['precision'] = precision
-            metrics['recall'] = recall
-        else:
-            # Multi-class
-            metrics['f1_macro'] = f1_score(refs, preds, average='macro')
-            metrics['f1_weighted'] = f1_score(refs, preds, average='weighted')
-
-        return metrics
+        return compute_classification_metrics(preds, refs, self.num_labels)
