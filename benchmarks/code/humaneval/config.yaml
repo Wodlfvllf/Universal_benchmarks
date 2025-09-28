@@ -1,0 +1,36 @@
+# HumanEval Benchmark Configuration
+
+benchmark:
+  name: "code/humaneval"
+  version: "1.0"
+  description: "Evaluation framework for code generation."
+  category: "code"
+  paper: "Chen et al., 2021"
+  official_url: "https://github.com/openai/human-eval"
+
+dataset:
+  name: "humaneval"
+  source: "huggingface"
+  path: "openai_humaneval"
+  cache_dir: "/root/benchmarks/universal-model-benchmarks/datasets/cache"
+
+subtasks:
+  - name: "default"
+    task_type: "code_generation"
+    dataset_config: "default"
+    metrics: ["pass@1", "pass@10"] # pass@k requires generating multiple samples
+    input_columns: ["prompt"]
+    label_column: "test" # The test cases are the labels
+
+evaluation:
+  batch_size: 1 # Code generation is typically done one by one
+  use_cache: false # Caching is less useful for generative tasks with temperature
+  # Parameters for the code generation task
+  num_samples_per_task: 10 # n in pass@k
+  temperature: 0.2
+
+output:
+  format: "json"
+  save_raw_predictions: true
+  aggregate_subtasks: false
+  output_dir: "/root/benchmarks/universal-model-benchmarks/results/raw"
