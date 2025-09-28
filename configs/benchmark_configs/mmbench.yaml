@@ -1,0 +1,33 @@
+benchmark:
+  name: "MMBench"
+  version: "1.0"
+  description: "Multi-Modal Benchmark"
+  category: "vision_language"
+  paper: "Liu et al., 2023"
+  official_url: "https://github.com/open-compass/MMBench"
+
+dataset:
+  source: "huggingface"
+  path: "lmms-lab/MMBench"
+  cache_dir: "${CACHE_DIR}/datasets/mmbench"
+
+subtasks:
+  - name: "default"
+    task_type: "multiple_choice"
+    dataset_config: "default"
+    metrics: ["accuracy"]
+    input_columns: ["image", "question", "choices"]
+    label_column: "answer"
+
+evaluation:
+  batch_size: 16
+  max_sequence_length: 512
+  num_workers: 4
+  use_cache: true
+  cache_predictions: true
+
+output:
+  format: "json"
+  save_raw_predictions: true
+  save_per_sample_metrics: false
+  aggregate_subtasks: true
