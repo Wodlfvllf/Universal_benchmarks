@@ -1,0 +1,37 @@
+# TyDiQA (Typologically Diverse Question Answering) Benchmark Configuration
+# Note: The TyDiQA dataset has a complex structure. This config uses a simplified
+# approach where the document title is used as context. A dedicated preprocessor
+# would be needed for a full, correct implementation.
+
+benchmark:
+  name: "multilingual/tydiqa"
+  version: "1.0"
+  description: "A benchmark for typologically diverse question answering."
+  category: "multilingual"
+  paper: "Clark et al., 2020"
+  official_url: "https://ai.google.com/research/tydiqa/"
+
+dataset:
+  name: "tydiqa"
+  source: "huggingface"
+  path: "tydiqa"
+  cache_dir: "/root/benchmarks/universal-model-benchmarks/datasets/cache"
+
+subtasks:
+  - name: "primary_task"
+    task_type: "extractive_qa"
+    dataset_config: "primary_task"
+    metrics: ["f1", "exact_match"]
+    # Simplified input mapping
+    input_columns: ["question_text", "document_title"] # Using title as context
+    label_column: "annotations" # The task needs to know how to parse this
+
+evaluation:
+  batch_size: 8
+  use_cache: true
+
+output:
+  format: "json"
+  save_raw_predictions: false
+  aggregate_subtasks: false
+  output_dir: "/root/benchmarks/universal-model-benchmarks/results/raw"
