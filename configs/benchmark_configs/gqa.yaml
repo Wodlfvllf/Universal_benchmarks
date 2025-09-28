@@ -1,0 +1,33 @@
+benchmark:
+  name: "GQA"
+  version: "1.0"
+  description: "Visual Reasoning in the Real World"
+  category: "vision_language"
+  paper: "Hudson & Manning, 2019"
+  official_url: "https://cs.stanford.edu/people/dorarad/gqa/"
+
+dataset:
+  source: "huggingface"
+  path: "lmms-lab/GQA"
+  cache_dir: "${CACHE_DIR}/datasets/gqa"
+
+subtasks:
+  - name: "default"
+    task_type: "visual_qa"
+    dataset_config: "default"
+    metrics: ["accuracy"]
+    input_columns: ["image", "question"]
+    label_column: "answer"
+
+evaluation:
+  batch_size: 16
+  max_sequence_length: 512
+  num_workers: 4
+  use_cache: true
+  cache_predictions: true
+
+output:
+  format: "json"
+  save_raw_predictions: true
+  save_per_sample_metrics: false
+  aggregate_subtasks: true
