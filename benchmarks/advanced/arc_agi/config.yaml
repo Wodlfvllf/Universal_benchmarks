@@ -1,0 +1,37 @@
+# ARC-AGI (Abstraction and Reasoning Corpus) Benchmark Configuration
+# WARNING: This benchmark is NOT RUNNABLE with the current framework.
+# It requires a highly specialized task implementation to handle the grid-based
+# input-output format and evaluation.
+
+benchmark:
+  name: "advanced/arc_agi"
+  version: "1.0"
+  description: "A benchmark for abstract reasoning and general intelligence."
+  category: "advanced"
+  paper: "Chollet, 2019"
+  official_url: "https://arcprize.org/arc-agi"
+
+dataset:
+  name: "arc_agi"
+  source: "huggingface"
+  path: "allenai/arc_agi"
+  cache_dir: "/root/benchmarks/universal-model-benchmarks/datasets/cache"
+
+subtasks:
+  - name: "default"
+    # This task type does not exist yet and would need to be implemented.
+    task_type: "arc_agi_specialized_task"
+    dataset_config: "default"
+    metrics: ["task_success_rate"]
+    input_columns: ["train_tasks", "test_tasks"]
+    label_column: "test_outputs"
+
+evaluation:
+  batch_size: 1
+  use_cache: true
+
+output:
+  format: "json"
+  save_raw_predictions: false
+  aggregate_subtasks: false
+  output_dir: "/root/benchmarks/universal-model-benchmarks/results/raw"
