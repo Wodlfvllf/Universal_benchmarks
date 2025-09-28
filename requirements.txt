@@ -1,0 +1,12 @@
+huggingface-hub
+datasets
+transformers
+scikit-learn
+pandas
+numpy
+torch
+torchvision
+Pillow
+pyyaml
+rouge_score
+nltk
