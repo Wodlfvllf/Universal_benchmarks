@@ -1,0 +1,48 @@
+# BBEH (BIG-Bench Extra Hard) Benchmark Configuration
+# Note: This is a subset of the 23 tasks available.
+
+benchmark:
+  name: "advanced/bbeh"
+  version: "1.0"
+  description: "A subset of the BIG-Bench language tasks that were found to be beyond the capabilities of language models."
+  category: "advanced"
+  paper: "Kazemi et al., 2025"
+  official_url: "https://github.com/google-deepmind/bbeh"
+
+dataset:
+  name: "bbeh"
+  source: "huggingface"
+  path: "google-deepmind/bbeh"
+  cache_dir: "/root/benchmarks/universal-model-benchmarks/datasets/cache"
+
+subtasks:
+  - name: "causal_judgment"
+    task_type: "multiple_choice"
+    dataset_config: "causal_judgment"
+    metrics: ["accuracy"]
+    input_columns: ["input", "multiple_choice_targets"]
+    label_column: "target"
+
+  - name: "date_understanding"
+    task_type: "multiple_choice"
+    dataset_config: "date_understanding"
+    metrics: ["accuracy"]
+    input_columns: ["input", "multiple_choice_targets"]
+    label_column: "target"
+
+  - name: "formal_fallacies"
+    task_type: "multiple_choice"
+    dataset_config: "formal_fallacies"
+    metrics: ["accuracy"]
+    input_columns: ["input", "multiple_choice_targets"]
+    label_column: "target"
+
+evaluation:
+  batch_size: 4
+  use_cache: true
+
+output:
+  format: "json"
+  save_raw_predictions: false
+  aggregate_subtasks: true
+  output_dir: "/root/benchmarks/universal-model-benchmarks/results/raw"
