@@ -1,0 +1,35 @@
+# GSM8K (Grade School Math 8K) Benchmark Configuration
+# Note: This is modeled as a text generation task. A proper evaluation requires
+# a specialized MathReasoningTask to extract and validate the final numeric answer.
+
+benchmark:
+  name: "llm/gsm8k"
+  version: "1.0"
+  description: "Grade school math word problems."
+  category: "llm"
+  paper: "Cobbe et al., 2021"
+  official_url: "https://github.com/openai/grade-school-math"
+
+dataset:
+  name: "gsm8k"
+  source: "huggingface"
+  path: "gsm8k"
+  cache_dir: "/root/benchmarks/universal-model-benchmarks/datasets/cache"
+
+subtasks:
+  - name: "main"
+    task_type: "text_generation"
+    dataset_config: "main" # Use the main config of the dataset
+    metrics: ["rougeL"] # Using ROUGE-L as a proxy for solution similarity
+    input_columns: ["question"]
+    label_column: "answer"
+
+evaluation:
+  batch_size: 2
+  use_cache: true
+
+output:
+  format: "json"
+  save_raw_predictions: true
+  aggregate_subtasks: false
+  output_dir: "/root/benchmarks/universal-model-benchmarks/results/raw"
