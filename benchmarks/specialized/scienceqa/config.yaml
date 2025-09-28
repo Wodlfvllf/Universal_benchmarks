@@ -1,0 +1,33 @@
+# ScienceQA Benchmark Configuration
+
+benchmark:
+  name: "specialized/scienceqa"
+  version: "1.0"
+  description: "Science multimodal QA with rationale."
+  category: "specialized"
+  paper: "Lu et al., 2022"
+  official_url: "https://scienceqa.github.io/"
+
+dataset:
+  name: "scienceqa"
+  source: "huggingface"
+  path: "derek-thomas/ScienceQA"
+  cache_dir: "/root/benchmarks/universal-model-benchmarks/datasets/cache"
+
+subtasks:
+  - name: "default"
+    task_type: "visual_qa"
+    dataset_config: "default"
+    metrics: ["accuracy"]
+    input_columns: ["image", "question"]
+    label_column: "answer"
+
+evaluation:
+  batch_size: 8
+  use_cache: true
+
+output:
+  format: "json"
+  save_raw_predictions: false
+  aggregate_subtasks: false
+  output_dir: "/root/benchmarks/universal-model-benchmarks/results/raw"
