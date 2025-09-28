@@ -1,0 +1,33 @@
+benchmark:
+  name: "SEED-Bench"
+  version: "1.0"
+  description: "SEED Benchmark for Multimodal LLMs"
+  category: "vision_language"
+  paper: "Li et al., 2023"
+  official_url: "https://github.com/AILab-CVC/SEED-Bench"
+
+dataset:
+  source: "huggingface"
+  path: "AILab-CVC/SEED-Bench-2"
+  cache_dir: "${CACHE_DIR}/datasets/seed_bench"
+
+subtasks:
+  - name: "default"
+    task_type: "multiple_choice"
+    dataset_config: "default"
+    metrics: ["accuracy"]
+    input_columns: ["image", "question", "choices"]
+    label_column: "answer"
+
+evaluation:
+  batch_size: 16
+  max_sequence_length: 512
+  num_workers: 4
+  use_cache: true
+  cache_predictions: true
+
+output:
+  format: "json"
+  save_raw_predictions: true
+  save_per_sample_metrics: false
+  aggregate_subtasks: true
