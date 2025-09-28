@@ -1,0 +1,34 @@
+# HellaSwag Benchmark Configuration
+
+benchmark:
+  name: "llm/hellaswag"
+  version: "1.0"
+  description: "Commonsense NLI for Situations With Adversarial Generations."
+  category: "llm"
+  paper: "Zellers et al., 2019"
+  official_url: "https://rowanzellers.com/hellaswag/"
+
+dataset:
+  name: "hellaswag"
+  source: "huggingface"
+  path: "Rowan/hellaswag"
+  cache_dir: "/root/benchmarks/universal-model-benchmarks/datasets/cache"
+
+subtasks:
+  - name: "default"
+    task_type: "multiple_choice"
+    dataset_config: "default" # HellaSwag has one main configuration
+    metrics: ["accuracy"]
+    # The task implementation will need to know how to combine ctx and endings
+    input_columns: ["ctx", "endings"]
+    label_column: "label"
+
+evaluation:
+  batch_size: 8
+  use_cache: true
+
+output:
+  format: "json"
+  save_raw_predictions: false
+  aggregate_subtasks: false # Only one subtask
+  output_dir: "/root/benchmarks/universal-model-benchmarks/results/raw"
