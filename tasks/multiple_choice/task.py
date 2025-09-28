@@ -1,5 +1,6 @@
 from typing import List, Dict, Any
 from ..base import BaseTask, TaskInput, TaskOutput
+from .metrics import compute_multiple_choice_metrics
 
 class MultipleChoiceQATask(BaseTask):
     """Implementation for multiple choice question answering"""
@@ -79,13 +80,8 @@ class MultipleChoiceQATask(BaseTask):
         return [self.parse_output(out) for out in raw_outputs]
 
     def compute_metrics(self, predictions: List[TaskOutput], 
-                       references: List[Any]) -> Dict[str, float]:
-        """Compute multiple choice metrics"""
-        from sklearn.metrics import accuracy_score
-
+                       references: List[TaskInput]) -> Dict[str, float]:
+        """Compute multiple choice metrics using the dedicated metrics module."""
         preds = [p.predictions for p in predictions]
         refs = [r.labels for r in references]
-        
-        return {
-            'accuracy': accuracy_score(refs, preds)
-        }
+        return compute_multiple_choice_metrics(preds, refs)
