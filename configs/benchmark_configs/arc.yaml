@@ -1,0 +1,39 @@
+benchmark:
+  name: "ARC"
+  version: "1.0"
+  description: "AI2 Reasoning Challenge"
+  category: "llm"
+  paper: "Clark et al., 2018"
+  official_url: "https://allenai.org/data/arc"
+
+dataset:
+  source: "huggingface"
+  path: "ai2_arc"
+  cache_dir: "${CACHE_DIR}/datasets/arc"
+
+subtasks:
+  - name: "ARC-Challenge"
+    task_type: "multiple_choice"
+    dataset_config: "ARC-Challenge"
+    metrics: ["accuracy"]
+    input_columns: ["question", "choices"]
+    label_column: "answerKey"
+  - name: "ARC-Easy"
+    task_type: "multiple_choice"
+    dataset_config: "ARC-Easy"
+    metrics: ["accuracy"]
+    input_columns: ["question", "choices"]
+    label_column: "answerKey"
+
+evaluation:
+  batch_size: 16
+  max_sequence_length: 512
+  num_workers: 4
+  use_cache: true
+  cache_predictions: true
+
+output:
+  format: "json"
+  save_raw_predictions: true
+  save_per_sample_metrics: false
+  aggregate_subtasks: true
