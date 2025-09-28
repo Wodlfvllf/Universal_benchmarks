@@ -1,0 +1,33 @@
+# VQAv2 (Visual Question Answering v2.0) Benchmark Configuration
+
+benchmark:
+  name: "vision_language/vqav2"
+  version: "2.0"
+  description: "Visual Question Answering on real-world images."
+  category: "vision_language"
+  paper: "Goyal et al., 2017"
+  official_url: "https://visualqa.org/"
+
+dataset:
+  name: "vqav2"
+  source: "huggingface"
+  path: "HuggingFaceM4/VQAv2"
+  cache_dir: "/root/benchmarks/universal-model-benchmarks/datasets/cache"
+
+subtasks:
+  - name: "default"
+    task_type: "visual_qa"
+    dataset_config: "default"
+    metrics: ["vqa_accuracy"] # This is a simplified metric; the official one is more complex
+    input_columns: ["image", "question"]
+    label_column: "answers"
+
+evaluation:
+  batch_size: 8
+  use_cache: true
+
+output:
+  format: "json"
+  save_raw_predictions: false
+  aggregate_subtasks: false
+  output_dir: "/root/benchmarks/universal-model-benchmarks/results/raw"
