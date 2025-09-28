@@ -1,0 +1,48 @@
+# XL-Sum (Cross-Lingual Summarization) Benchmark Configuration
+# Note: This is a subset of the 44 languages available.
+
+benchmark:
+  name: "multilingual/xlsum"
+  version: "1.0"
+  description: "A benchmark for cross-lingual abstractive summarization."
+  category: "multilingual"
+  paper: "Hasan et al., 2021"
+  official_url: "https://github.com/csebuetnlp/xl-sum"
+
+dataset:
+  name: "xlsum"
+  source: "huggingface"
+  path: "csebuetnlp/xlsum"
+  cache_dir: "/root/benchmarks/universal-model-benchmarks/datasets/cache"
+
+subtasks:
+  - name: "english"
+    task_type: "summarization"
+    dataset_config: "english"
+    metrics: ["rougeL"]
+    input_columns: ["text"]
+    label_column: "summary"
+
+  - name: "french"
+    task_type: "summarization"
+    dataset_config: "french"
+    metrics: ["rougeL"]
+    input_columns: ["text"]
+    label_column: "summary"
+
+  - name: "spanish"
+    task_type: "summarization"
+    dataset_config: "spanish"
+    metrics: ["rougeL"]
+    input_columns: ["text"]
+    label_column: "summary"
+
+evaluation:
+  batch_size: 2
+  use_cache: true
+
+output:
+  format: "json"
+  save_raw_predictions: false
+  aggregate_subtasks: true
+  output_dir: "/root/benchmarks/universal-model-benchmarks/results/raw"
