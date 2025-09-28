@@ -1,0 +1,43 @@
+# MMMLU (Multilingual Massive Multitask Language Understanding) Benchmark Configuration
+# Note: This is a small subset of the available languages and subjects.
+
+benchmark:
+  name: "multilingual/mmmlu"
+  version: "1.0"
+  description: "A multilingual version of the MMLU benchmark."
+  category: "multilingual"
+  paper: "OpenAI, 2024"
+  official_url: "https://openai.com/research/"
+
+dataset:
+  name: "mmmlu"
+  source: "huggingface"
+  path: "openai/MMMLU"
+  cache_dir: "/root/benchmarks/universal-model-benchmarks/datasets/cache"
+
+subtasks:
+  - name: "de_abstract_algebra"
+    task_type: "multiple_choice"
+    dataset_config: "de"
+    # This would require a runner that can filter by subject within the dataset
+    # For now, it will run on the entire 'de' set.
+    metrics: ["accuracy"]
+    input_columns: ["question", "choices"]
+    label_column: "answer"
+
+  - name: "fr_high_school_us_history"
+    task_type: "multiple_choice"
+    dataset_config: "fr"
+    metrics: ["accuracy"]
+    input_columns: ["question", "choices"]
+    label_column: "answer"
+
+evaluation:
+  batch_size: 4
+  use_cache: true
+
+output:
+  format: "json"
+  save_raw_predictions: false
+  aggregate_subtasks: true
+  output_dir: "/root/benchmarks/universal-model-benchmarks/results/raw"
