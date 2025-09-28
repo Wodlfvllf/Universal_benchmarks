@@ -1,6 +1,7 @@
 from typing import List, Dict, Any
 import numpy as np
 from ..base import BaseTask, TaskInput, TaskOutput
+from .metrics import compute_generation_metrics
 
 class TextGenerationTask(BaseTask):
     """Implementation for text generation tasks"""
@@ -57,46 +58,14 @@ class TextGenerationTask(BaseTask):
         return TaskOutput(predictions=raw_output.strip())
 
     def compute_metrics(self, predictions: List[TaskOutput], 
-                       references: List[Any]) -> Dict[str, float]:
-        """Compute generation metrics"""
-        try:
-            from rouge_score import rouge_scorer
-            from nltk.translate.bleu_score import sentence_bleu
-        except ImportError:
-            print("Please install rouge_score and nltk: pip install rouge_score nltk")
+                       references: List[TaskInput]) -> Dict[str, float]:
+        """Compute generation metrics using the dedicated metrics module."""
+        preds = [p.predictions for p in predictions]
+        refs = [r.labels for r in references if r.labels is not None]
+        # Ensure predictions and references are aligned after filtering
+        valid_predictions = [p.predictions for i, p in enumerate(predictions) if references[i].labels is not None]
+
+        if not valid_predictions:
             return {}
 
-        scorer = rouge_scorer.RougeScorer(['rouge1', 'rouge2', 'rougeL'], use_stemmer=True)
-
-        rouge1_scores = []
-        rouge2_scores = []
-        rougeL_scores = []
-        bleu_scores = []
-
-        refs = [r.labels for r in references]
-
-        for pred, ref in zip(predictions, refs):
-            if ref is None:
-                continue
-
-            pred_text = pred.predictions
-            ref_text = ref
-
-            # ROUGE scores
-            scores = scorer.score(ref_text, pred_text)
-            rouge1_scores.append(scores['rouge1'].fmeasure)
-            rouge2_scores.append(scores['rouge2'].fmeasure)
-            rougeL_scores.append(scores['rougeL'].fmeasure)
-
-            # BLEU score
-            ref_tokens = [ref_text.split()]
-            pred_tokens = pred_text.split()
-            bleu = sentence_bleu(ref_tokens, pred_tokens)
-            bleu_scores.append(bleu)
-
-        return {
-            'rouge1': np.mean(rouge1_scores) if rouge1_scores else 0.0,
-            'rouge2': np.mean(rouge2_scores) if rouge2_scores else 0.0,
-            'rougeL': np.mean(rougeL_scores) if rougeL_scores else 0.0,
-            'bleu': np.mean(bleu_scores) if bleu_scores else 0.0
-        }
+        return compute_generation_metrics(valid_predictions, refs)
