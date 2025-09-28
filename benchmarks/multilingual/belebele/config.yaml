@@ -1,0 +1,48 @@
+# BELEBELE (Benchmark for Evaluating Language-agnostic BERT) Configuration
+# Note: This is a subset of the 122 languages available.
+
+benchmark:
+  name: "multilingual/belebele"
+  version: "1.0"
+  description: "A multilingual reading comprehension benchmark."
+  category: "multilingual"
+  paper: "Bandarkar et al., 2023"
+  official_url: "https://github.com/facebookresearch/belebele"
+
+dataset:
+  name: "belebele"
+  source: "huggingface"
+  path: "facebook/belebele"
+  cache_dir: "/root/benchmarks/universal-model-benchmarks/datasets/cache"
+
+subtasks:
+  - name: "eng_Latn"
+    task_type: "multiple_choice"
+    dataset_config: "eng_Latn"
+    metrics: ["accuracy"]
+    input_columns: ["flores_passage", "question", "mc_answer1", "mc_answer2", "mc_answer3", "mc_answer4"]
+    label_column: "correct_answer_num"
+
+  - name: "fra_Latn"
+    task_type: "multiple_choice"
+    dataset_config: "fra_Latn"
+    metrics: ["accuracy"]
+    input_columns: ["flores_passage", "question", "mc_answer1", "mc_answer2", "mc_answer3", "mc_answer4"]
+    label_column: "correct_answer_num"
+
+  - name: "arb_Arab"
+    task_type: "multiple_choice"
+    dataset_config: "arb_Arab"
+    metrics: ["accuracy"]
+    input_columns: ["flores_passage", "question", "mc_answer1", "mc_answer2", "mc_answer3", "mc_answer4"]
+    label_column: "correct_answer_num"
+
+evaluation:
+  batch_size: 4
+  use_cache: true
+
+output:
+  format: "json"
+  save_raw_predictions: false
+  aggregate_subtasks: true
+  output_dir: "/root/benchmarks/universal-model-benchmarks/results/raw"
