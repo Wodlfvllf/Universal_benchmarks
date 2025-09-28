@@ -1,0 +1,33 @@
+benchmark:
+  name: "MMMU"
+  version: "1.0"
+  description: "Massive Multi-discipline Multimodal Understanding"
+  category: "vision_language"
+  paper: "Yue et al., 2023"
+  official_url: "https://mmmu-benchmark.github.io/"
+
+dataset:
+  source: "huggingface"
+  path: "MMMU/MMMU"
+  cache_dir: "${CACHE_DIR}/datasets/mmmu"
+
+subtasks:
+  - name: "default"
+    task_type: "multiple_choice"
+    dataset_config: "default"
+    metrics: ["accuracy"]
+    input_columns: ["image", "question", "choices"]
+    label_column: "answer"
+
+evaluation:
+  batch_size: 16
+  max_sequence_length: 512
+  num_workers: 4
+  use_cache: true
+  cache_predictions: true
+
+output:
+  format: "json"
+  save_raw_predictions: true
+  save_per_sample_metrics: false
+  aggregate_subtasks: true
