@@ -1,0 +1,35 @@
+# DocVQA Benchmark Configuration
+# Note: This uses the generic VisualQATask. A specialized DocumentQATask
+# could be implemented for better handling of document-specific layouts.
+
+benchmark:
+  name: "specialized/docvqa"
+  version: "1.0"
+  description: "Visual Question Answering on Document Images."
+  category: "specialized"
+  paper: "Mathew et al., 2021"
+  official_url: "https://www.docvqa.org/"
+
+dataset:
+  name: "docvqa"
+  source: "huggingface"
+  path: "lmms-lab/DocVQA"
+  cache_dir: "/root/benchmarks/universal-model-benchmarks/datasets/cache"
+
+subtasks:
+  - name: "default"
+    task_type: "visual_qa"
+    dataset_config: "default"
+    metrics: ["anls"] # Official metric is Average Normalized Levenshtein Similarity
+    input_columns: ["image", "question"]
+    label_column: "answers"
+
+evaluation:
+  batch_size: 8
+  use_cache: true
+
+output:
+  format: "json"
+  save_raw_predictions: false
+  aggregate_subtasks: false
+  output_dir: "/root/benchmarks/universal-model-benchmarks/results/raw"
