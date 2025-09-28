@@ -1,0 +1,33 @@
+benchmark:
+  name: "BBH"
+  version: "1.0"
+  description: "BIG-Bench Hard"
+  category: "llm"
+  paper: "Suzgun et al., 2022"
+  official_url: "https://github.com/suzgunmirac/BIG-Bench-Hard"
+
+dataset:
+  source: "huggingface"
+  path: "lukaemon/bbh"
+  cache_dir: "${CACHE_DIR}/datasets/bbh"
+
+subtasks:
+  - name: "boolean_expressions"
+    task_type: "multiple_choice"
+    dataset_config: "boolean_expressions"
+    metrics: ["accuracy"]
+    input_columns: ["input"]
+    label_column: "target"
+
+evaluation:
+  batch_size: 16
+  max_sequence_length: 512
+  num_workers: 4
+  use_cache: true
+  cache_predictions: true
+
+output:
+  format: "json"
+  save_raw_predictions: true
+  save_per_sample_metrics: false
+  aggregate_subtasks: true
