@@ -34,6 +34,7 @@ def register_all_tasks():
     from .summarization.task import SummarizationTask
     from .translation.task import TranslationTask
     from .visual_qa.task import VisualQATask
+    from .image_captioning.task import ImageCaptioningTask
 
     TaskRegistry.register('classification', ClassificationTask)
     TaskRegistry.register('multiple_choice', MultipleChoiceQATask)
@@ -42,6 +43,7 @@ def register_all_tasks():
     TaskRegistry.register('summarization', SummarizationTask)
     TaskRegistry.register('translation', TranslationTask)
     TaskRegistry.register('visual_qa', VisualQATask)
+    TaskRegistry.register('image_captioning', ImageCaptioningTask)
     # Add more registrations for other tasks here
 
 # Auto-register tasks when this module is imported
