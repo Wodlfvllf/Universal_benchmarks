@@ -1,0 +1,35 @@
+# MBPP (Mostly Basic Python Problems) Benchmark Configuration
+
+benchmark:
+  name: "code/mbpp"
+  version: "1.0"
+  description: "A benchmark of short Python functions."
+  category: "code"
+  paper: "Austin et al., 2021"
+  official_url: "https://github.com/google-research/google-research/tree/master/mbpp"
+
+dataset:
+  name: "mbpp"
+  source: "huggingface"
+  path: "mbpp"
+  cache_dir: "/root/benchmarks/universal-model-benchmarks/datasets/cache"
+
+subtasks:
+  - name: "default"
+    task_type: "code_generation"
+    dataset_config: "default"
+    metrics: ["pass@1"]
+    input_columns: ["text"] # The description serves as the prompt
+    label_column: "test_list" # The test cases
+
+evaluation:
+  batch_size: 1
+  use_cache: false
+  num_samples_per_task: 10
+  temperature: 0.2
+
+output:
+  format: "json"
+  save_raw_predictions: true
+  aggregate_subtasks: false
+  output_dir: "/root/benchmarks/universal-model-benchmarks/results/raw"
