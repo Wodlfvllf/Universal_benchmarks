@@ -1,0 +1,75 @@
+benchmark:
+  name: "llm/glue"
+  version: "1.0"
+  description: "General Language Understanding Evaluation"
+  category: "llm"
+  paper: "Wang et al., 2018"
+  official_url: "https://gluebenchmark.com/"
+
+dataset:
+  name: "glue" # This name should match a key in the DatasetRegistry
+  source: "huggingface"
+  path: "nyu-mll/glue"
+  cache_dir: "/root/benchmarks/universal-model-benchmarks/datasets/cache"
+
+subtasks:
+  - name: "cola"
+    task_type: "classification"
+    dataset_config: "cola"
+    metrics: ["matthews_correlation", "accuracy"]
+    input_columns: ["sentence"]
+    label_column: "label"
+
+  - name: "sst2"
+    task_type: "classification"
+    dataset_config: "sst2"
+    metrics: ["accuracy", "f1"]
+    input_columns: ["sentence"]
+    label_column: "label"
+
+  - name: "mrpc"
+    task_type: "classification" # Simplified for this example
+    dataset_config: "mrpc"
+    metrics: ["accuracy", "f1"]
+    input_columns: ["sentence1", "sentence2"]
+    label_column: "label"
+
+  - name: "qqp"
+    task_type: "classification" # Simplified for this example
+    dataset_config: "qqp"
+    metrics: ["accuracy", "f1"]
+    input_columns: ["question1", "question2"]
+    label_column: "label"
+
+  - name: "mnli"
+    task_type: "classification" # Simplified for this example
+    dataset_config: "mnli"
+    metrics: ["accuracy"]
+    input_columns: ["premise", "hypothesis"]
+    label_column: "label"
+
+  - name: "qnli"
+    task_type: "classification" # Simplified for this example
+    dataset_config: "qnli"
+    metrics: ["accuracy"]
+    input_columns: ["question", "sentence"]
+    label_column: "label"
+
+  - name: "rte"
+    task_type: "classification" # Simplified for this example
+    dataset_config: "rte"
+    metrics: ["accuracy"]
+    input_columns: ["sentence1", "sentence2"]
+    label_column: "label"
+
+evaluation:
+  batch_size: 8
+  use_cache: true
+  cache_predictions: true
+
+output:
+  format: "json"
+  save_raw_predictions: true
+  save_per_sample_metrics: false
+  aggregate_subtasks: true
+  output_dir: "/root/benchmarks/universal-model-benchmarks/results/raw"
