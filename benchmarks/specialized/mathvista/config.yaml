@@ -1,0 +1,35 @@
+# MathVista Benchmark Configuration
+# Note: This uses the generic VisualQATask. A proper evaluation requires a
+# specialized MathReasoningVQA task to parse and validate the numeric answer.
+
+benchmark:
+  name: "specialized/mathvista"
+  version: "1.0"
+  description: "Mathematical reasoning with visuals."
+  category: "specialized"
+  paper: "Lu et al., 2023"
+  official_url: "https://mathvista.github.io/"
+
+dataset:
+  name: "mathvista"
+  source: "huggingface"
+  path: "AI4Math/MathVista"
+  cache_dir: "/root/benchmarks/universal-model-benchmarks/datasets/cache"
+
+subtasks:
+  - name: "default"
+    task_type: "visual_qa"
+    dataset_config: "default"
+    metrics: ["accuracy"] # The official metric is more complex
+    input_columns: ["image", "question"]
+    label_column: "answer"
+
+evaluation:
+  batch_size: 4
+  use_cache: true
+
+output:
+  format: "json"
+  save_raw_predictions: false
+  aggregate_subtasks: false
+  output_dir: "/root/benchmarks/universal-model-benchmarks/results/raw"
