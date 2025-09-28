@@ -1,0 +1,33 @@
+benchmark:
+  name: "Flickr30k"
+  version: "1.0"
+  description: "Flickr30k Entities"
+  category: "vision_language"
+  paper: "Young et al., 2014"
+  official_url: "https://shannon.cs.illinois.edu/DenotationGraph/"
+
+dataset:
+  source: "huggingface"
+  path: "nlphuji/flickr30k"
+  cache_dir: "${CACHE_DIR}/datasets/flickr30k"
+
+subtasks:
+  - name: "default"
+    task_type: "image_captioning"
+    dataset_config: "default"
+    metrics: ["bleu", "rouge"]
+    input_columns: ["image"]
+    label_column: "caption"
+
+evaluation:
+  batch_size: 16
+  max_sequence_length: 512
+  num_workers: 4
+  use_cache: true
+  cache_predictions: true
+
+output:
+  format: "json"
+  save_raw_predictions: true
+  save_per_sample_metrics: false
+  aggregate_subtasks: true
