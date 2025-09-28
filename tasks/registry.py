@@ -32,12 +32,14 @@ def register_all_tasks():
     from .text_generation.task import TextGenerationTask
     from .code_generation.task import CodeGenerationTask
     from .summarization.task import SummarizationTask
+    from .translation.task import TranslationTask
 
     TaskRegistry.register('classification', ClassificationTask)
     TaskRegistry.register('multiple_choice', MultipleChoiceQATask)
     TaskRegistry.register('text_generation', TextGenerationTask)
     TaskRegistry.register('code_generation', CodeGenerationTask)
     TaskRegistry.register('summarization', SummarizationTask)
+    TaskRegistry.register('translation', TranslationTask)
     # Add more registrations for other tasks here
 
 # Auto-register tasks when this module is imported
