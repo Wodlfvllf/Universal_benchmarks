@@ -1,0 +1,33 @@
+benchmark:
+  name: "HellaSwag"
+  version: "1.0"
+  description: "Harder Endings, Longer contexts, and Low-shot Activities for Situations With Adversarial Generations"
+  category: "llm"
+  paper: "Zellers et al., 2019"
+  official_url: "https://rowanzellers.com/hellaswag/"
+
+dataset:
+  source: "huggingface"
+  path: "Rowan/hellaswag"
+  cache_dir: "${CACHE_DIR}/datasets/hellaswag"
+
+subtasks:
+  - name: "hellaswag"
+    task_type: "multiple_choice"
+    dataset_config: "default"
+    metrics: ["accuracy"]
+    input_columns: ["ctx_a", "ctx_b", "endings"]
+    label_column: "label"
+
+evaluation:
+  batch_size: 16
+  max_sequence_length: 512
+  num_workers: 4
+  use_cache: true
+  cache_predictions: true
+
+output:
+  format: "json"
+  save_raw_predictions: true
+  save_per_sample_metrics: false
+  aggregate_subtasks: true
