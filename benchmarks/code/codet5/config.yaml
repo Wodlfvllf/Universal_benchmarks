@@ -1,0 +1,33 @@
+# CodeT5 Benchmark Configuration (Code-to-Text Subtask)
+
+benchmark:
+  name: "code/codet5"
+  version: "1.0"
+  description: "A benchmark for code understanding and generation."
+  category: "code"
+  paper: "Wang et al., 2021"
+  official_url: "https://github.com/salesforce/CodeT5"
+
+dataset:
+  name: "code_x_glue_ct_code_to_text"
+  source: "huggingface"
+  path: "code_x_glue_ct_code_to_text"
+  cache_dir: "/root/benchmarks/universal-model-benchmarks/datasets/cache"
+
+subtasks:
+  - name: "code-to-text"
+    task_type: "summarization"
+    dataset_config: "default"
+    metrics: ["bleu", "rougeL"]
+    input_columns: ["code"]
+    label_column: "docstring"
+
+evaluation:
+  batch_size: 8
+  use_cache: true
+
+output:
+  format: "json"
+  save_raw_predictions: true
+  aggregate_subtasks: false
+  output_dir: "/root/benchmarks/universal-model-benchmarks/results/raw"
