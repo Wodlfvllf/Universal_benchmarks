@@ -1,54 +1,28 @@
 from typing import Dict, Any
-import torch
-
-from .text import TokenizationProcessor
+from .text import TextProcessor
 from .image import ImageProcessor
 
 class MultimodalProcessor:
-    """Processes multimodal inputs (e.g., text and image)."""
+    """Processes multimodal data (e.g., text and images)."""
 
-    def __init__(self, tokenizer_name: str, image_processor_config: Dict = None):
+    def __init__(self, text_processor: TextProcessor, image_processor: ImageProcessor):
+        self.text_processor = text_processor
+        self.image_processor = image_processor
+
+    def process(self, data: Dict[str, Any]) -> Dict[str, Any]:
         """
-        Initializes the multimodal processor.
+        Processes a single multimodal data point.
 
         Args:
-            tokenizer_name: The name of the Hugging Face tokenizer to use.
-            image_processor_config: Configuration for the ImageProcessor.
-        """
-        self.tokenizer = TokenizationProcessor(model_name=tokenizer_name)
-        self.image_processor = ImageProcessor(**(image_processor_config or {}))
-
-    def process(self, text_input: str = None, image_input: Any = None) -> Dict[str, Any]:
-        """
-        Processes a combination of text and image inputs.
-
-        Args:
-            text_input: The text data to process.
-            image_input: The image data to process (path or PIL Image).
+            data: A dictionary containing different modalities (e.g., 'text', 'image').
 
         Returns:
-            A dictionary containing the processed text and image tensors.
+            A dictionary with processed data for each modality.
         """
         processed_data = {}
-
-        if text_input is not None:
-            processed_data['text'] = self.tokenizer.tokenize(text_input)
-
-        if image_input is not None:
-            processed_data['image'] = self.image_processor.process(image_input)
-
-        return processed_data
-
-    def batch_process(self, text_inputs: List[str] = None, image_inputs: List[Any] = None) -> Dict[str, Any]:
-        """
-        Processes a batch of multimodal inputs.
-        """
-        batch_processed_data = {}
-
-        if text_inputs:
-            batch_processed_data['text'] = self.tokenizer.batch_tokenize(text_inputs)
+        if 'text' in data:
+            processed_data['text'] = self.text_processor.process(data['text'])
+        if 'image' in data:
+            processed_data['image'] = self.image_processor.process(data['image'])
         
-        if image_inputs:
-            batch_processed_data['image'] = self.image_processor.batch_process(image_inputs)
-
-        return batch_processed_data
+        return processed_data

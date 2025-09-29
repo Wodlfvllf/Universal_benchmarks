@@ -1,12 +1,9 @@
-"""
-Default configuration for the dataset cache.
-"""
+from dataclasses import dataclass
+from pathlib import Path
 
-# The maximum size of the cache in gigabytes.
-# If the cache exceeds this size, the oldest files will be deleted.
-MAX_SIZE_GB = 50.0
-
-# The time-to-live for cached items in days.
-# Files older than this will be removed when the cache is cleaned.
-# Set to 0 or a negative number to disable time-based expiration.
-TTL_DAYS = 30
+@dataclass
+class CacheConfig:
+    """Configuration for dataset caching."""
+    cache_dir: Path = Path.home() / '.cache' / 'universal_benchmarks'
+    max_size_gb: float = 100.0
+    ttl_days: int = 30

@@ -5,7 +5,7 @@ from .loaders.local import LocalFileLoader
 
 class DatasetRegistry:
     """Central registry for datasets and loaders"""
-
+    
     # Pre-configured dataset mappings
     DATASET_CONFIGS = {
         # LLM Benchmarks
@@ -40,7 +40,7 @@ class DatasetRegistry:
             'loader': 'huggingface',
             'identifier': 'openai_humaneval'
         },
-
+        
         # Vision-Language Benchmarks
         'vqav2': {
             'loader': 'huggingface',
@@ -50,47 +50,46 @@ class DatasetRegistry:
             'loader': 'huggingface',
             'identifier': 'HuggingFaceM4/COCO'
         },
-
+        
         # Add more dataset configs...
     }
-
+    
     # Loader classes
-    LOADERS = {
+    LOADERS: Dict[str, Type[DatasetLoader]] = {
         'huggingface': HuggingFaceLoader,
         'local': LocalFileLoader,
     }
-
+    
     @classmethod
     def get_dataset(cls, name: str, **kwargs) -> Any:
         """Load dataset by name"""
         if name not in cls.DATASET_CONFIGS:
             raise ValueError(f"Unknown dataset: {name}")
-
-        config = cls.DATASET_CONFIGS[name]
-        loader_name = config['loader']
-
+            
+        config = cls.DATASET_CONFIGS[name].copy()
+        loader_name = config.pop('loader')
+        
         if loader_name not in cls.LOADERS:
             raise ValueError(f"Unknown loader: {loader_name}")
-
+            
         loader_class = cls.LOADERS[loader_name]
         loader = loader_class()
-
+        
         # Merge config with kwargs
-        load_kwargs = {k: v for k, v in config.items() if k != 'loader'}
-        load_kwargs.update(kwargs)
-
+        load_kwargs = {**config, **kwargs}
+        
         return loader.load(**load_kwargs)
-
+        
     @classmethod
     def register_dataset(cls, name: str, config: Dict[str, Any]):
         """Register new dataset configuration"""
         cls.DATASET_CONFIGS[name] = config
-
+        
     @classmethod
     def register_loader(cls, name: str, loader_class: Type[DatasetLoader]):
         """Register new loader class"""
         cls.LOADERS[name] = loader_class
-
+        
     @classmethod
     def list_datasets(cls) -> List[str]:
         """List all registered datasets"""
