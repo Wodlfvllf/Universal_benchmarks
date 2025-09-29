@@ -1,0 +1,33 @@
+benchmark:
+  name: "ImageNet-1K"
+  version: "1.0"
+  description: "Large-scale image classification with 1000 classes"
+  category: "vision"
+  paper: "Deng et al., 2009"
+  official_url: "https://www.image-net.org/"
+
+dataset:
+  source: "huggingface"
+  path: "imagenet-1k"
+  cache_dir: "${CACHE_DIR}/datasets/imagenet-1k"
+
+subtasks:
+  - name: "default"
+    task_type: "image_classification"
+    dataset_config: "default"
+    metrics: ["accuracy", "top5_accuracy"]
+    input_columns: ["image"]
+    label_column: "label"
+
+evaluation:
+  batch_size: 32
+  max_sequence_length: 224
+  num_workers: 4
+  use_cache: true
+  cache_predictions: true
+
+output:
+  format: "json"
+  save_raw_predictions: true
+  save_per_sample_metrics: false
+  aggregate_subtasks: false
