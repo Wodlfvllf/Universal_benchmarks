@@ -1,6 +1,8 @@
-from tasks.base import BaseTask, TaskInput, TaskOutput
+
 from typing import List, Dict, Any
 import numpy as np
+from ..base import BaseTask, TaskInput, TaskOutput
+from ...metrics.registry import MetricRegistry
 
 class TextGenerationTask(BaseTask):
     """Implementation for text generation tasks"""
@@ -9,18 +11,21 @@ class TextGenerationTask(BaseTask):
         self.max_length = self.config.get('max_length', 512)
         self.temperature = self.config.get('temperature', 0.7)
         self.top_p = self.config.get('top_p', 0.95)
+        self.rouge_metric = MetricRegistry.get_metric('rouge')
+        self.bleu_metric = MetricRegistry.get_metric('bleu')
         
-    def prepare_inputs(self, dataset: Any, **kwargs) -> List[TaskInput]:
+    def prepare_inputs(self, dataset: Any, input_column: str, label_column: str) -> List[TaskInput]:
         """Prepare generation inputs"""
         inputs = []
         
-        for example in dataset:
-            prompt = example.get('prompt', example.get('input', ''))
-            reference = example.get('completion', example.get('output', None))
-            
+        prompts = dataset[input_column]
+        completions = dataset[label_column]
+        
+        for i, prompt in enumerate(prompts):
             inputs.append(TaskInput(
                 data=prompt,
-                labels=reference
+                labels=completions[i],
+                metadata={'index': i}
             ))
             
         return inputs
@@ -34,57 +39,37 @@ class TextGenerationTask(BaseTask):
         """Generate text completions"""
         outputs = []
         
-        for input_data in inputs:
-            prompt = self.format_prompt(input_data)
-            
-            generation = model.generate(
-                prompt,
-                max_length=self.max_length,
+        prompts = [self.format_prompt(inp) for inp in inputs]
+
+        for i in range(0, len(prompts), batch_size):
+            batch_prompts = prompts[i:i+batch_size]
+
+            generations = model.generate(
+                batch_prompts,
+                max_new_tokens=self.max_length,
                 temperature=self.temperature,
                 top_p=self.top_p
             )
             
-            outputs.append(TaskOutput(
-                predictions=generation,
-                metadata={'prompt_length': len(prompt)}
-            ))
+            for j, generation in enumerate(generations):
+                outputs.append(self.parse_output(generation))
             
         return outputs
     
+    def parse_output(self, raw_output: str) -> TaskOutput:
+        """Parse model output into structured format"""
+        return TaskOutput(predictions=raw_output.strip())
+
     def compute_metrics(self, predictions: List[TaskOutput], 
                        references: List[Any]) -> Dict[str, float]:
         """Compute generation metrics"""
-        from rouge_score import rouge_scorer
-        from nltk.translate.bleu_score import sentence_bleu
         
-        scorer = rouge_scorer.RougeScorer(['rouge1', 'rouge2', 'rougeL'])
+        preds = [p.predictions for p in predictions]
         
-        rouge1_scores = []
-        rouge2_scores = []
-        rougeL_scores = []
-        bleu_scores = []
-        
-        for pred, ref in zip(predictions, references):
-            pred_text = pred.predictions
-            ref_text = ref
-            
-            # ROUGE scores
-            scores = scorer.score(ref_text, pred_text)
-            rouge1_scores.append(scores['rouge1'].fmeasure)
-            rouge2_scores.append(scores['rouge2'].fmeasure)
-            rougeL_scores.append(scores['rougeL'].fmeasure)
-            
-            # BLEU score
-            bleu = sentence_bleu([ref_text.split()], pred_text.split())
-            bleu_scores.append(bleu)
+        rouge_result = self.rouge_metric.compute(preds, references)
+        bleu_result = self.bleu_metric.compute(preds, references)
         
         return {
-            'rouge1': np.mean(rouge1_scores),
-            'rouge2': np.mean(rouge2_scores),
-            'rougeL': np.mean(rougeL_scores),
-            'bleu': np.mean(bleu_scores)
+            'rougeL': rouge_result.score,
+            'bleu': bleu_result.score,
         }
-
-    def parse_output(self, raw_output: str) -> TaskOutput:
-        """Parse model output into structured format"""
-        pass
