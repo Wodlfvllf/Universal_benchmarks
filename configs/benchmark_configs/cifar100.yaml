@@ -1,0 +1,33 @@
+benchmark:
+  name: "CIFAR-100"
+  version: "1.0"
+  description: "Classification of 100 object classes"
+  category: "vision"
+  paper: "Krizhevsky, 2009"
+  official_url: "https://www.cs.toronto.edu/~kriz/cifar.html"
+
+dataset:
+  source: "huggingface"
+  path: "cifar100"
+  cache_dir: "${CACHE_DIR}/datasets/cifar100"
+
+subtasks:
+  - name: "default"
+    task_type: "image_classification"
+    dataset_config: "default"
+    metrics: ["accuracy", "f1_macro"]
+    input_columns: ["img"]
+    label_column: "fine_label"
+
+evaluation:
+  batch_size: 32
+  max_sequence_length: 32
+  num_workers: 4
+  use_cache: true
+  cache_predictions: true
+
+output:
+  format: "json"
+  save_raw_predictions: true
+  save_per_sample_metrics: false
+  aggregate_subtasks: false
