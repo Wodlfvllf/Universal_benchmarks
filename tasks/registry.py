@@ -41,6 +41,7 @@ def register_all_tasks():
     from tasks.document_qa.task import DocumentQATask
     from tasks.image_classification.task import ImageClassificationTask
     from tasks.math_reasoning.task import MathReasoningTask
+    from tasks.sequence_pair_classification.task import SequencePairClassificationTask
     
     TaskRegistry.register('classification', ClassificationTask)
     TaskRegistry.register('multiple_choice', MultipleChoiceQATask)
@@ -57,5 +58,6 @@ def register_all_tasks():
     TaskRegistry.register('document_qa', DocumentQATask)
     TaskRegistry.register('image_classification', ImageClassificationTask)
     TaskRegistry.register('math_reasoning', MathReasoningTask)
+    TaskRegistry.register('sequence_pair_classification', SequencePairClassificationTask)
     
 register_all_tasks()
