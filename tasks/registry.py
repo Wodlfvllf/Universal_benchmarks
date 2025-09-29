@@ -43,6 +43,7 @@ def register_all_tasks():
     from tasks.math_reasoning.task import MathReasoningTask
     from tasks.sequence_pair_classification.task import SequencePairClassificationTask
     from tasks.regression.task import RegressionTask
+    from tasks.nli.task import NLITask
     
     TaskRegistry.register('classification', ClassificationTask)
     TaskRegistry.register('multiple_choice', MultipleChoiceQATask)
@@ -61,5 +62,6 @@ def register_all_tasks():
     TaskRegistry.register('math_reasoning', MathReasoningTask)
     TaskRegistry.register('sequence_pair_classification', SequencePairClassificationTask)
     TaskRegistry.register('regression', RegressionTask)
+    TaskRegistry.register('nli', NLITask)
     
 register_all_tasks()
