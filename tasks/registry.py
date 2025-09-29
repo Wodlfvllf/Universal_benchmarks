@@ -42,6 +42,7 @@ def register_all_tasks():
     from tasks.image_classification.task import ImageClassificationTask
     from tasks.math_reasoning.task import MathReasoningTask
     from tasks.sequence_pair_classification.task import SequencePairClassificationTask
+    from tasks.regression.task import RegressionTask
     
     TaskRegistry.register('classification', ClassificationTask)
     TaskRegistry.register('multiple_choice', MultipleChoiceQATask)
@@ -59,5 +60,6 @@ def register_all_tasks():
     TaskRegistry.register('image_classification', ImageClassificationTask)
     TaskRegistry.register('math_reasoning', MathReasoningTask)
     TaskRegistry.register('sequence_pair_classification', SequencePairClassificationTask)
+    TaskRegistry.register('regression', RegressionTask)
     
 register_all_tasks()
