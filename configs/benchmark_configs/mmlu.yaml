@@ -1,20 +1,536 @@
 benchmark:
-  name: "MMLU"
-  task_type: "multiple_choice"
-  
-subtasks:
-  - name: "abstract_algebra"
-    subject: "STEM"
-    num_choices: 4
-    metrics: ["accuracy", "per_subject_accuracy"]
-    
+  category: llm
+  description: Massive Multitask Language Understanding
+  name: MMLU
+  official_url: https://github.com/hendrycks/test
+  paper: Hendrycks et al., 2021
+  version: '1.0'
+dataset:
+  cache_dir: ${CACHE_DIR}/datasets/mmlu
+  path: cais/mmlu
+  source: huggingface
 evaluation:
-  few_shot_examples: 5
-  prompt_template: |
-    Question: {question}
-    Choices:
-    A) {choice_a}
-    B) {choice_b}
-    C) {choice_c}
-    D) {choice_d}
-    Answer:
+  batch_size: 16
+  cache_predictions: true
+  max_sequence_length: 512
+  num_workers: 4
+  use_cache: true
+output:
+  aggregate_subtasks: true
+  format: json
+  save_per_sample_metrics: false
+  save_raw_predictions: true
+subtasks:
+- dataset_config: abstract_algebra
+  input_columns:
+  - question
+  - choices
+  label_column: answer
+  metrics:
+  - accuracy
+  name: abstract_algebra
+  task_type: multiple_choice
+- dataset_config: anatomy
+  input_columns:
+  - question
+  - choices
+  label_column: answer
+  metrics:
+  - accuracy
+  name: anatomy
+  task_type: multiple_choice
+- dataset_config: astronomy
+  input_columns:
+  - question
+  - choices
+  label_column: answer
+  metrics:
+  - accuracy
+  name: astronomy
+  task_type: multiple_choice
+- dataset_config: business_ethics
+  input_columns:
+  - question
+  - choices
+  label_column: answer
+  metrics:
+  - accuracy
+  name: business_ethics
+  task_type: multiple_choice
+- dataset_config: clinical_knowledge
+  input_columns:
+  - question
+  - choices
+  label_column: answer
+  metrics:
+  - accuracy
+  name: clinical_knowledge
+  task_type: multiple_choice
+- dataset_config: college_biology
+  input_columns:
+  - question
+  - choices
+  label_column: answer
+  metrics:
+  - accuracy
+  name: college_biology
+  task_type: multiple_choice
+- dataset_config: college_chemistry
+  input_columns:
+  - question
+  - choices
+  label_column: answer
+  metrics:
+  - accuracy
+  name: college_chemistry
+  task_type: multiple_choice
+- dataset_config: college_computer_science
+  input_columns:
+  - question
+  - choices
+  label_column: answer
+  metrics:
+  - accuracy
+  name: college_computer_science
+  task_type: multiple_choice
+- dataset_config: college_mathematics
+  input_columns:
+  - question
+  - choices
+  label_column: answer
+  metrics:
+  - accuracy
+  name: college_mathematics
+  task_type: multiple_choice
+- dataset_config: college_medicine
+  input_columns:
+  - question
+  - choices
+  label_column: answer
+  metrics:
+  - accuracy
+  name: college_medicine
+  task_type: multiple_choice
+- dataset_config: college_physics
+  input_columns:
+  - question
+  - choices
+  label_column: answer
+  metrics:
+  - accuracy
+  name: college_physics
+  task_type: multiple_choice
+- dataset_config: computer_security
+  input_columns:
+  - question
+  - choices
+  label_column: answer
+  metrics:
+  - accuracy
+  name: computer_security
+  task_type: multiple_choice
+- dataset_config: conceptual_physics
+  input_columns:
+  - question
+  - choices
+  label_column: answer
+  metrics:
+  - accuracy
+  name: conceptual_physics
+  task_type: multiple_choice
+- dataset_config: econometrics
+  input_columns:
+  - question
+  - choices
+  label_column: answer
+  metrics:
+  - accuracy
+  name: econometrics
+  task_type: multiple_choice
+- dataset_config: electrical_engineering
+  input_columns:
+  - question
+  - choices
+  label_column: answer
+  metrics:
+  - accuracy
+  name: electrical_engineering
+  task_type: multiple_choice
+- dataset_config: elementary_mathematics
+  input_columns:
+  - question
+  - choices
+  label_column: answer
+  metrics:
+  - accuracy
+  name: elementary_mathematics
+  task_type: multiple_choice
+- dataset_config: formal_logic
+  input_columns:
+  - question
+  - choices
+  label_column: answer
+  metrics:
+  - accuracy
+  name: formal_logic
+  task_type: multiple_choice
+- dataset_config: global_facts
+  input_columns:
+  - question
+  - choices
+  label_column: answer
+  metrics:
+  - accuracy
+  name: global_facts
+  task_type: multiple_choice
+- dataset_config: high_school_biology
+  input_columns:
+  - question
+  - choices
+  label_column: answer
+  metrics:
+  - accuracy
+  name: high_school_biology
+  task_type: multiple_choice
+- dataset_config: high_school_chemistry
+  input_columns:
+  - question
+  - choices
+  label_column: answer
+  metrics:
+  - accuracy
+  name: high_school_chemistry
+  task_type: multiple_choice
+- dataset_config: high_school_computer_science
+  input_columns:
+  - question
+  - choices
+  label_column: answer
+  metrics:
+  - accuracy
+  name: high_school_computer_science
+  task_type: multiple_choice
+- dataset_config: high_school_european_history
+  input_columns:
+  - question
+  - choices
+  label_column: answer
+  metrics:
+  - accuracy
+  name: high_school_european_history
+  task_type: multiple_choice
+- dataset_config: high_school_geography
+  input_columns:
+  - question
+  - choices
+  label_column: answer
+  metrics:
+  - accuracy
+  name: high_school_geography
+  task_type: multiple_choice
+- dataset_config: high_school_government_and_politics
+  input_columns:
+  - question
+  - choices
+  label_column: answer
+  metrics:
+  - accuracy
+  name: high_school_government_and_politics
+  task_type: multiple_choice
+- dataset_config: high_school_macroeconomics
+  input_columns:
+  - question
+  - choices
+  label_column: answer
+  metrics:
+  - accuracy
+  name: high_school_macroeconomics
+  task_type: multiple_choice
+- dataset_config: high_school_mathematics
+  input_columns:
+  - question
+  - choices
+  label_column: answer
+  metrics:
+  - accuracy
+  name: high_school_mathematics
+  task_type: multiple_choice
+- dataset_config: high_school_microeconomics
+  input_columns:
+  - question
+  - choices
+  label_column: answer
+  metrics:
+  - accuracy
+  name: high_school_microeconomics
+  task_type: multiple_choice
+- dataset_config: high_school_physics
+  input_columns:
+  - question
+  - choices
+  label_column: answer
+  metrics:
+  - accuracy
+  name: high_school_physics
+  task_type: multiple_choice
+- dataset_config: high_school_psychology
+  input_columns:
+  - question
+  - choices
+  label_column: answer
+  metrics:
+  - accuracy
+  name: high_school_psychology
+  task_type: multiple_choice
+- dataset_config: high_school_statistics
+  input_columns:
+  - question
+  - choices
+  label_column: answer
+  metrics:
+  - accuracy
+  name: high_school_statistics
+  task_type: multiple_choice
+- dataset_config: high_school_us_history
+  input_columns:
+  - question
+  - choices
+  label_column: answer
+  metrics:
+  - accuracy
+  name: high_school_us_history
+  task_type: multiple_choice
+- dataset_config: high_school_world_history
+  input_columns:
+  - question
+  - choices
+  label_column: answer
+  metrics:
+  - accuracy
+  name: high_school_world_history
+  task_type: multiple_choice
+- dataset_config: human_aging
+  input_columns:
+  - question
+  - choices
+  label_column: answer
+  metrics:
+  - accuracy
+  name: human_aging
+  task_type: multiple_choice
+- dataset_config: human_sexuality
+  input_columns:
+  - question
+  - choices
+  label_column: answer
+  metrics:
+  - accuracy
+  name: human_sexuality
+  task_type: multiple_choice
+- dataset_config: international_law
+  input_columns:
+  - question
+  - choices
+  label_column: answer
+  metrics:
+  - accuracy
+  name: international_law
+  task_type: multiple_choice
+- dataset_config: jurisprudence
+  input_columns:
+  - question
+  - choices
+  label_column: answer
+  metrics:
+  - accuracy
+  name: jurisprudence
+  task_type: multiple_choice
+- dataset_config: logical_fallacies
+  input_columns:
+  - question
+  - choices
+  label_column: answer
+  metrics:
+  - accuracy
+  name: logical_fallacies
+  task_type: multiple_choice
+- dataset_config: machine_learning
+  input_columns:
+  - question
+  - choices
+  label_column: answer
+  metrics:
+  - accuracy
+  name: machine_learning
+  task_type: multiple_choice
+- dataset_config: management
+  input_columns:
+  - question
+  - choices
+  label_column: answer
+  metrics:
+  - accuracy
+  name: management
+  task_type: multiple_choice
+- dataset_config: marketing
+  input_columns:
+  - question
+  - choices
+  label_column: answer
+  metrics:
+  - accuracy
+  name: marketing
+  task_type: multiple_choice
+- dataset_config: medical_genetics
+  input_columns:
+  - question
+  - choices
+  label_column: answer
+  metrics:
+  - accuracy
+  name: medical_genetics
+  task_type: multiple_choice
+- dataset_config: miscellaneous
+  input_columns:
+  - question
+  - choices
+  label_column: answer
+  metrics:
+  - accuracy
+  name: miscellaneous
+  task_type: multiple_choice
+- dataset_config: moral_disputes
+  input_columns:
+  - question
+  - choices
+  label_column: answer
+  metrics:
+  - accuracy
+  name: moral_disputes
+  task_type: multiple_choice
+- dataset_config: moral_scenarios
+  input_columns:
+  - question
+  - choices
+  label_column: answer
+  metrics:
+  - accuracy
+  name: moral_scenarios
+  task_type: multiple_choice
+- dataset_config: nutrition
+  input_columns:
+  - question
+  - choices
+  label_column: answer
+  metrics:
+  - accuracy
+  name: nutrition
+  task_type: multiple_choice
+- dataset_config: philosophy
+  input_columns:
+  - question
+  - choices
+  label_column: answer
+  metrics:
+  - accuracy
+  name: philosophy
+  task_type: multiple_choice
+- dataset_config: prehistory
+  input_columns:
+  - question
+  - choices
+  label_column: answer
+  metrics:
+  - accuracy
+  name: prehistory
+  task_type: multiple_choice
+- dataset_config: professional_accounting
+  input_columns:
+  - question
+  - choices
+  label_column: answer
+  metrics:
+  - accuracy
+  name: professional_accounting
+  task_type: multiple_choice
+- dataset_config: professional_law
+  input_columns:
+  - question
+  - choices
+  label_column: answer
+  metrics:
+  - accuracy
+  name: professional_law
+  task_type: multiple_choice
+- dataset_config: professional_medicine
+  input_columns:
+  - question
+  - choices
+  label_column: answer
+  metrics:
+  - accuracy
+  name: professional_medicine
+  task_type: multiple_choice
+- dataset_config: professional_psychology
+  input_columns:
+  - question
+  - choices
+  label_column: answer
+  metrics:
+  - accuracy
+  name: professional_psychology
+  task_type: multiple_choice
+- dataset_config: public_relations
+  input_columns:
+  - question
+  - choices
+  label_column: answer
+  metrics:
+  - accuracy
+  name: public_relations
+  task_type: multiple_choice
+- dataset_config: security_studies
+  input_columns:
+  - question
+  - choices
+  label_column: answer
+  metrics:
+  - accuracy
+  name: security_studies
+  task_type: multiple_choice
+- dataset_config: sociology
+  input_columns:
+  - question
+  - choices
+  label_column: answer
+  metrics:
+  - accuracy
+  name: sociology
+  task_type: multiple_choice
+- dataset_config: us_foreign_policy
+  input_columns:
+  - question
+  - choices
+  label_column: answer
+  metrics:
+  - accuracy
+  name: us_foreign_policy
+  task_type: multiple_choice
+- dataset_config: virology
+  input_columns:
+  - question
+  - choices
+  label_column: answer
+  metrics:
+  - accuracy
+  name: virology
+  task_type: multiple_choice
+- dataset_config: world_religions
+  input_columns:
+  - question
+  - choices
+  label_column: answer
+  metrics:
+  - accuracy
+  name: world_religions
+  task_type: multiple_choice

@@ -1,0 +1,106 @@
+import yaml
+
+mmlu_subjects = [
+    "abstract_algebra",
+    "anatomy",
+    "astronomy",
+    "business_ethics",
+    "clinical_knowledge",
+    "college_biology",
+    "college_chemistry",
+    "college_computer_science",
+    "college_mathematics",
+    "college_medicine",
+    "college_physics",
+    "computer_security",
+    "conceptual_physics",
+    "econometrics",
+    "electrical_engineering",
+    "elementary_mathematics",
+    "formal_logic",
+    "global_facts",
+    "high_school_biology",
+    "high_school_chemistry",
+    "high_school_computer_science",
+    "high_school_european_history",
+    "high_school_geography",
+    "high_school_government_and_politics",
+    "high_school_macroeconomics",
+    "high_school_mathematics",
+    "high_school_microeconomics",
+    "high_school_physics",
+    "high_school_psychology",
+    "high_school_statistics",
+    "high_school_us_history",
+    "high_school_world_history",
+    "human_aging",
+    "human_sexuality",
+    "international_law",
+    "jurisprudence",
+    "logical_fallacies",
+    "machine_learning",
+    "management",
+    "marketing",
+    "medical_genetics",
+    "miscellaneous",
+    "moral_disputes",
+    "moral_scenarios",
+    "nutrition",
+    "philosophy",
+    "prehistory",
+    "professional_accounting",
+    "professional_law",
+    "professional_medicine",
+    "professional_psychology",
+    "public_relations",
+    "security_studies",
+    "sociology",
+    "us_foreign_policy",
+    "virology",
+    "world_religions",
+]
+
+benchmark_config = {
+    "benchmark": {
+        "name": "MMLU",
+        "version": "1.0",
+        "description": "Massive Multitask Language Understanding",
+        "category": "llm",
+        "paper": "Hendrycks et al., 2021",
+        "official_url": "https://github.com/hendrycks/test",
+    },
+    "dataset": {
+        "source": "huggingface",
+        "path": "cais/mmlu",
+        "cache_dir": "${CACHE_DIR}/datasets/mmlu",
+    },
+    "subtasks": [],
+    "evaluation": {
+        "batch_size": 16,
+        "max_sequence_length": 512,
+        "num_workers": 4,
+        "use_cache": True,
+        "cache_predictions": True,
+    },
+    "output": {
+        "format": "json",
+        "save_raw_predictions": True,
+        "save_per_sample_metrics": False,
+        "aggregate_subtasks": True,
+    },
+}
+
+for subject in mmlu_subjects:
+    benchmark_config["subtasks"].append(
+        {
+            "name": subject,
+            "task_type": "multiple_choice",
+            "dataset_config": subject,
+            "metrics": ["accuracy"],
+            "input_columns": ["question", "choices"],
+            "label_column": "answer",
+        }
+    )
+
+with open("configs/benchmark_configs/mmlu.yaml", "w") as f:
+    yaml.dump(benchmark_config, f, default_flow_style=False)
