@@ -1,12 +1,35 @@
 benchmark:
   name: "HumanEval"
-  task_type: "code_generation"
-  
+  version: "1.0"
+  description: "Code generation from natural language"
+  category: "code"
+  paper: "Chen et al., 2021"
+  official_url: "https://github.com/openai/human-eval"
+
+dataset:
+  source: "huggingface"
+  path: "openai/openai_humaneval"
+  cache_dir: "${CACHE_DIR}/datasets/humaneval"
+
+subtasks:
+  - name: "default"
+    task_type: "code_generation"
+    dataset_config: "default"
+    metrics: ["pass@1", "pass@10", "pass@100"]
+    input_columns: ["prompt"]
+    label_column: "test"
+
 evaluation:
+  batch_size: 1
   num_samples: 100  # for pass@k
   temperature: 0.8
   max_tokens: 512
-  metrics: ["pass@1", "pass@10", "pass@100"]
   execution:
     timeout: 5
     sandbox: true
+
+output:
+  format: "json"
+  save_raw_predictions: true
+  save_per_sample_metrics: false
+  aggregate_subtasks: false
