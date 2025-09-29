@@ -1,37 +1,111 @@
-from typing import Dict, Type, List, Any, Optional
-from .interfaces.base import BaseModel
+from typing import Dict, Type, Optional, Any, List
+from .interfaces.base import BaseModel, ModelConfig, ModelType
 from .interfaces.huggingface import HuggingFaceModel
+from .interfaces.openai import OpenAIModel
+from .interfaces.anthropic import AnthropicModel
+from .interfaces.google import GoogleModel
 
 class ModelRegistry:
-    """Central registry for all model implementations."""
-
-    _models: Dict[str, Type[BaseModel]] = {}
-
+    """Central registry for model implementations"""
+    
+    MODEL_IMPLEMENTATIONS: Dict[str, Type[BaseModel]] = {
+        'huggingface': HuggingFaceModel,
+        'openai': OpenAIModel,
+        'anthropic': AnthropicModel,
+        'google': GoogleModel,
+    }
+    
+    MODEL_CONFIGS: Dict[str, Dict[str, Any]] = {
+        # Text Models
+        'gpt-4': {
+            'implementation': 'openai',
+            'model_type': ModelType.TEXT,
+            'max_length': 8192
+        },
+        'gpt-3.5-turbo': {
+            'implementation': 'openai',
+            'model_type': ModelType.TEXT,
+            'max_length': 4096
+        },
+        'claude-3-opus': {
+            'implementation': 'anthropic',
+            'model_type': ModelType.TEXT,
+            'max_length': 200000
+        },
+        'gemini-1.5-pro': {
+            'implementation': 'google',
+            'model_name': 'gemini-1.5-pro-latest',
+            'model_type': ModelType.TEXT,
+            'max_length': 1000000
+        },
+        'gemini-pro': {
+            'implementation': 'google',
+            'model_name': 'gemini-pro',
+            'model_type': ModelType.TEXT,
+            'max_length': 30720
+        },
+        'llama-3-70b': {
+            'implementation': 'huggingface',
+            'model_type': ModelType.TEXT,
+            'model_name': 'meta-llama/Meta-Llama-3-70B',
+            'max_length': 8192
+        },
+        'mistral-7b': {
+            'implementation': 'huggingface',
+            'model_type': ModelType.TEXT,
+            'model_name': 'mistralai/Mistral-7B-v0.1',
+            'max_length': 32768
+        },
+    }
+    
     @classmethod
-    def register(cls, name: str, model_class: Type[BaseModel]):
-        """Register a model implementation."""
-        if name in cls._models:
-            print(f"Warning: Model type '{name}' is already registered. Overwriting.")
-        cls._models[name] = model_class
-
-    @classmethod
-    def get_model(cls, model_type: str, model_name: str, config: Optional[Dict[str, Any]] = None) -> BaseModel:
-        """Get a model instance by type and name."""
-        if model_type not in cls._models:
-            raise ValueError(f"Model type '{model_type}' not registered. Available types: {list(cls._models.keys())}")
+    def get_model(cls, 
+                  name: str,
+                  config_override: Optional[Dict[str, Any]] = None) -> BaseModel:
+        """Get model instance by name"""
         
-        model_class = cls._models[model_type]
-        return model_class(model_name=model_name, config=config)
+        if name not in cls.MODEL_CONFIGS:
+            # Try to interpret as HuggingFace model
+            config = ModelConfig(
+                model_name=name,
+                model_type=ModelType.TEXT
+            )
+            return HuggingFaceModel(config)
+            
+        # Get pre-configured model
+        model_info = cls.MODEL_CONFIGS[name].copy()
+        implementation = model_info.pop('implementation')
+        
+        # Create config
+        config_dict = {
+            'model_name': model_info.get('model_name', name),
+            **model_info
+        }
+        
+        # Apply overrides
+        if config_override:
+            config_dict.update(config_override)
+            
+        config = ModelConfig(**config_dict)
+        
+        # Get implementation class
+        if implementation not in cls.MODEL_IMPLEMENTATIONS:
+            raise ValueError(f"Unknown implementation: {implementation}")
+            
+        model_class = cls.MODEL_IMPLEMENTATIONS[implementation]
+        return model_class(config)
+        
+    @classmethod
+    def register_model(cls, name: str, config: Dict[str, Any]):
+        """Register new model configuration"""
+        cls.MODEL_CONFIGS[name] = config
+        
+    @classmethod
+    def list_models(cls) -> List[str]:
+        """List all registered models"""
+        return list(cls.MODEL_CONFIGS.keys())
 
     @classmethod
-    def list_model_types(cls) -> List[str]:
-        """List all registered model types."""
-        return list(cls._models.keys())
-
-def register_all_models():
-    """Register all built-in model interfaces."""
-    ModelRegistry.register('huggingface', HuggingFaceModel)
-    # Add more model types like 'openai', 'anthropic' here
-
-# Auto-register models when this module is imported
-register_all_models()
+    def register_implementation(cls, name: str, model_class: Type[BaseModel]):
+        """Register a new model implementation"""
+        cls.MODEL_IMPLEMENTATIONS[name] = model_class

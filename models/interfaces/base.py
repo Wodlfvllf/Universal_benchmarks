@@ -1,40 +1,100 @@
 from abc import ABC, abstractmethod
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, Union
+from dataclasses import dataclass
+from enum import Enum
+import numpy as np
+
+class ModelType(Enum):
+    """Model type enumeration"""
+    TEXT = "text"
+    VISION = "vision"
+    MULTIMODAL = "multimodal"
+    CODE = "code"
+    AUDIO = "audio"
+
+@dataclass
+class ModelConfig:
+    """Base configuration for models"""
+    model_name: str
+    model_type: ModelType
+    max_length: int = 512
+    batch_size: int = 32
+    device: str = "cuda"
+    precision: str = "float32"
+    cache_dir: Optional[str] = None
+    use_cache: bool = True
+    num_threads: int = 1
+    
+@dataclass
+class ModelOutput:
+    """Standard model output format"""
+    predictions: Union[str, List[str], np.ndarray]
+    logits: Optional[np.ndarray] = None
+    probabilities: Optional[np.ndarray] = None
+    embeddings: Optional[np.ndarray] = None
+    attention_weights: Optional[np.ndarray] = None
+    metadata: Optional[Dict[str, Any]] = None
 
 class BaseModel(ABC):
-    """Abstract base class for all models."""
-
-    def __init__(self, model_name: str, config: Optional[Dict[str, Any]] = None):
-        """
-        Initializes the model.
-
-        Args:
-            model_name: The name or path of the model to load.
-            config: A dictionary of configuration options for the model.
-        """
-        self.model_name = model_name
-        self.config = config or {}
-        self.model = self._load_model()
-
+    """Abstract base class for all models"""
+    
+    def __init__(self, config: ModelConfig):
+        self.config = config
+        self.model = None
+        self.tokenizer = None
+        self.setup()
+        
     @abstractmethod
-    def _load_model(self) -> Any:
-        """Loads the actual model object."""
+    def setup(self):
+        """Initialize model and components"""
         pass
-
+        
     @abstractmethod
-    def generate(self, inputs: List[str], **kwargs) -> List[str]:
-        """
-        Generates text based on a list of input prompts.
-
-        Args:
-            inputs: A list of prompts to generate from.
-            **kwargs: Additional generation parameters (e.g., max_length, temperature).
-
-        Returns:
-            A list of generated text strings.
-        """
+    def generate(self, 
+                prompts: Union[str, List[str]], 
+                **kwargs) -> Union[str, List[str]]:
+        """Generate text completions"""
         pass
-
-    def __call__(self, inputs: List[str], **kwargs) -> List[str]:
-        """Allows the model to be called directly."""
-        return self.generate(inputs, **kwargs)
+        
+    @abstractmethod
+    def classify(self,
+                inputs: Union[str, List[str]],
+                labels: Optional[List[str]] = None,
+                **kwargs) -> ModelOutput:
+        """Perform classification"""
+        pass
+        
+    @abstractmethod
+    def embed(self,
+             inputs: Union[str, List[str]],
+             **kwargs) -> np.ndarray:
+        """Generate embeddings"""
+        pass
+        
+    def batch_process(self,
+                     inputs: List[Any],
+                     process_fn: callable,
+                     batch_size: Optional[int] = None) -> List[Any]:
+        """Process inputs in batches"""
+        batch_size = batch_size or self.config.batch_size
+        results = []
+        
+        for i in range(0, len(inputs), batch_size):
+            batch = inputs[i:i + batch_size]
+            batch_results = process_fn(batch)
+            results.extend(batch_results)
+            
+        return results
+        
+    @abstractmethod
+    def get_model_info(self) -> Dict[str, Any]:
+        """Get model information"""
+        pass
+        
+    def save_checkpoint(self, path: str):
+        """Save model checkpoint"""
+        raise NotImplementedError("Checkpoint saving not implemented")
+        
+    def load_checkpoint(self, path: str):
+        """Load model checkpoint"""
+        raise NotImplementedError("Checkpoint loading not implemented")
