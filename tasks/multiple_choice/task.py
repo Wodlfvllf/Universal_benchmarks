@@ -1,36 +1,30 @@
-from tasks.base import BaseTask, TaskInput, TaskOutput
 from typing import List, Dict, Any
+from ..base import BaseTask, TaskInput, TaskOutput
+from ...metrics.registry import MetricRegistry
 
 class MultipleChoiceQATask(BaseTask):
     """Implementation for multiple choice question answering"""
     
     def setup(self):
         self.choice_labels = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
+        self.accuracy_metric = MetricRegistry.get_metric('accuracy')
         
-    def prepare_inputs(self, dataset: Any, **kwargs) -> List[TaskInput]:
+    def prepare_inputs(self, dataset: Any, question_column: str, choices_column: str, answer_column: str) -> List[TaskInput]:
         """Prepare multiple choice inputs"""
         inputs = []
         
-        for example in dataset:
-            # Standard format: question, choices, answer
-            question = example['question']
-            choices = example['choices']
-            
-            # Add context if available
-            context = example.get('context', '')
-            
-            # Get correct answer index
-            answer = example.get('answer', None)
-            if isinstance(answer, str) and answer in self.choice_labels:
-                answer = self.choice_labels.index(answer)
-                
+        questions = dataset[question_column]
+        choices_list = dataset[choices_column]
+        answers = dataset[answer_column]
+        
+        for i, question in enumerate(questions):
             inputs.append(TaskInput(
                 data={
                     'question': question,
-                    'choices': choices,
-                    'context': context
+                    'choices': choices_list[i]
                 },
-                labels=answer
+                labels=answers[i],
+                metadata={'index': i}
             ))
             
         return inputs
@@ -40,42 +34,54 @@ class MultipleChoiceQATask(BaseTask):
         data = input_data.data
         
         prompt_parts = []
-        
-        # Add context if present
-        if data['context']:
-            prompt_parts.append(f"Context: {data['context']}\n")
-            
-        # Add question
         prompt_parts.append(f"Question: {data['question']}\n")
         
-        # Add choices
         prompt_parts.append("Choices:\n")
         for i, choice in enumerate(data['choices']):
             prompt_parts.append(f"{self.choice_labels[i]}) {choice}\n")
             
-        # Add instruction
-        prompt_parts.append("\nAnswer (A/B/C/D/...):")
+        prompt_parts.append("\nAnswer (A/B/C/D/...): ")
         
         return "".join(prompt_parts)
     
+    def predict(self, model: Any, inputs: List[TaskInput], 
+               batch_size: int = 1) -> List[TaskOutput]:
+        """Generate multiple choice predictions"""
+        outputs = []
+        
+        prompts = [self.format_prompt(inp) for inp in inputs]
+        
+        for i in range(0, len(prompts), batch_size):
+            batch_prompts = prompts[i:i+batch_size]
+            
+            generations = model.generate(
+                batch_prompts,
+                max_new_tokens=self.config.get('max_new_tokens', 5)
+            )
+            
+            for j, generation in enumerate(generations):
+                outputs.append(self.parse_output(generation))
+            
+        return outputs
+
     def parse_output(self, raw_output: str) -> TaskOutput:
         """Extract choice from output"""
-        # Clean output
         output = raw_output.strip().upper()
         
-        # Look for choice label
         for i, label in enumerate(self.choice_labels):
-            if label in output[:10]:  # Check beginning of output
+            if label in output:
                 return TaskOutput(predictions=i)
                 
-        # Default to first choice if unclear
-        return TaskOutput(predictions=0)
-
-    def predict(self, model: Any, inputs: List[TaskInput], **kwargs) -> List[TaskOutput]:
-        """Generate predictions using model"""
-        pass
-
+        return TaskOutput(predictions=0) # Default to first choice
+    
     def compute_metrics(self, predictions: List[TaskOutput], 
                        references: List[Any]) -> Dict[str, float]:
-        """Compute task-specific metrics"""
-        pass
+        """Compute multiple choice metrics"""
+        
+        preds = [p.predictions for p in predictions]
+        
+        accuracy_result = self.accuracy_metric.compute(preds, references)
+        
+        return {
+            'accuracy': accuracy_result.score,
+        }
