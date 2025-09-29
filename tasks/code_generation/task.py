@@ -2,7 +2,8 @@ import subprocess
 import tempfile
 import ast
 from typing import List, Dict, Any
-from tasks.base import BaseTask, TaskInput, TaskOutput
+from ..base import BaseTask, TaskInput, TaskOutput
+from ...metrics.registry import MetricRegistry
 import numpy as np
 
 class CodeGenerationTask(BaseTask):
@@ -11,41 +12,63 @@ class CodeGenerationTask(BaseTask):
     def setup(self):
         self.language = self.config.get('language', 'python')
         self.timeout = self.config.get('timeout', 5)
-        self.sandbox = self.config.get('sandbox', True)
+        self.pass_at_k_metric = MetricRegistry.get_metric('pass@1') # pass@1 is the default
+
+    def prepare_inputs(self, dataset: Any, prompt_column: str, test_column: str) -> List[TaskInput]:
+        """Prepare code generation inputs"""
+        inputs = []
         
+        prompts = dataset[prompt_column]
+        tests = dataset[test_column]
+        
+        for i, prompt in enumerate(prompts):
+            inputs.append(TaskInput(
+                data=prompt,
+                labels=tests[i],
+                metadata={'index': i}
+            ))
+            
+        return inputs
+
     def format_prompt(self, input_data: TaskInput) -> str:
         """Format code generation prompt"""
-        data = input_data.data
-        
-        if isinstance(data, dict):
-            # HumanEval format
-            prompt = data.get('prompt', '')
-            if 'signature' in data:
-                prompt = f"{data['signature']}\n    {data['docstring']}\n"
-        else:
-            prompt = data
-            
-        return prompt
+        return input_data.data
     
-    def execute_code(self, code: str, test_cases: List[Dict]) -> Dict:
-        """Execute generated code against test cases"""
-        results = {
-            'passed': 0,
-            'failed': 0,
-            'errors': []
-        }
+    def predict(self, model: Any, inputs: List[TaskInput], 
+               batch_size: int = 1) -> List[TaskOutput]:
+        """Generate code generation predictions"""
+        outputs = []
         
+        prompts = [self.format_prompt(inp) for inp in inputs]
+        
+        for i in range(0, len(prompts), batch_size):
+            batch_prompts = prompts[i:i+batch_size]
+            
+            generations = model.generate(
+                batch_prompts,
+                max_new_tokens=self.config.get('max_new_tokens', 512)
+            )
+            
+            for j, generation in enumerate(generations):
+                outputs.append(self.parse_output(generation))
+            
+        return outputs
+
+    def parse_output(self, raw_output: str) -> TaskOutput:
+        """Parse code generation output"""
+        return TaskOutput(predictions=raw_output)
+
+    def execute_code(self, code: str, test_cases: List[str]) -> bool:
+        """Execute generated code against test cases"""
         for test in test_cases:
             try:
                 # Create temporary file
                 with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False) as f:
-                    # Write code and test
                     f.write(code)
                     f.write('\n\n')
-                    f.write(test['test_code'])
+                    f.write(test)
                     temp_file = f.name
                 
-                # Execute
                 result = subprocess.run(
                     ['python', temp_file],
                     capture_output=True,
@@ -53,60 +76,23 @@ class CodeGenerationTask(BaseTask):
                     timeout=self.timeout
                 )
                 
-                if result.returncode == 0:
-                    results['passed'] += 1
-                else:
-                    results['failed'] += 1
-                    results['errors'].append(result.stderr)
+                if result.returncode != 0:
+                    return False
                     
-            except subprocess.TimeoutExpired:
-                results['failed'] += 1
-                results['errors'].append("Timeout exceeded")
-            except Exception as e:
-                results['failed'] += 1
-                results['errors'].append(str(e))
+            except (subprocess.TimeoutExpired, Exception):
+                return False
                 
-        return results
-    
+        return True
+
     def compute_metrics(self, predictions: List[TaskOutput], 
                        references: List[Any]) -> Dict[str, float]:
-        """Compute pass@k metrics"""
-        pass_at_1 = []
-        pass_at_10 = []
+        """Compute code generation metrics"""
         
+        pass_at_1_scores = []
         for pred, ref in zip(predictions, references):
-            # Execute against test cases
-            test_results = self.execute_code(pred.predictions, ref['test_cases'])
-            
-            pass_rate = test_results['passed'] / (test_results['passed'] + test_results['failed'])
-            pass_at_1.append(1.0 if pass_rate == 1.0 else 0.0)
-            
+            passed = self.execute_code(pred.predictions, ref)
+            pass_at_1_scores.append(float(passed))
+
         return {
-            'pass@1': np.mean(pass_at_1),
-            'syntax_valid': self.check_syntax_validity(predictions)
+            'pass@1': np.mean(pass_at_1_scores)
         }
-    
-    def check_syntax_validity(self, predictions: List[TaskOutput]) -> float:
-        """Check if generated code is syntactically valid"""
-        valid_count = 0
-        
-        for pred in predictions:
-            try:
-                ast.parse(pred.predictions)
-                valid_count += 1
-            except SyntaxError:
-                pass
-                
-        return valid_count / len(predictions)
-
-    def prepare_inputs(self, dataset: Any, **kwargs) -> List[TaskInput]:
-        """Convert dataset to task inputs"""
-        pass
-
-    def predict(self, model: Any, inputs: List[TaskInput], **kwargs) -> List[TaskOutput]:
-        """Generate predictions using model"""
-        pass
-
-    def parse_output(self, raw_output: str) -> TaskOutput:
-        """Parse model output into structured format"""
-        pass
