@@ -1,6 +1,6 @@
 from typing import List, Dict, Any
 from ..base import BaseTask, TaskInput, TaskOutput
-from ...metrics.registry import MetricRegistry
+from metrics.registry import MetricRegistry
 
 class GenerativeQATask(BaseTask):
     """Implementation for generative question answering tasks"""
