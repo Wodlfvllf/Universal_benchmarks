@@ -2,7 +2,7 @@
 from typing import List, Dict, Any
 import numpy as np
 from ..base import BaseTask, TaskInput, TaskOutput
-from ...metrics.registry import MetricRegistry
+from metrics.registry import MetricRegistry
 
 class TextGenerationTask(BaseTask):
     """Implementation for text generation tasks"""
