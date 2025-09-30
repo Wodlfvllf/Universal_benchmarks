@@ -2,7 +2,7 @@
 import ast
 import subprocess
 import tempfile
-from typing import List, Dict
+from typing import List, Dict, Any
 import numpy as np
 from .base import BaseMetric, MetricResult
 from .pass_at_k import estimate_pass_at_k
