@@ -3,7 +3,7 @@ import tempfile
 import ast
 from typing import List, Dict, Any
 from ..base import BaseTask, TaskInput, TaskOutput
-from ...metrics.registry import MetricRegistry
+from metrics.registry import MetricRegistry
 import numpy as np
 
 class CodeGenerationTask(BaseTask):
