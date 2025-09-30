@@ -1,6 +1,15 @@
-from .accuracy import accuracy_score
-from .bleu import bleu_score
-from .f1 import f1_score
-from .pass_at_k import pass_at_k
-from .rouge import rouge_score
-from .exact_match import exact_match_score
+from .base import BaseMetric, MetricResult
+from .classification import (
+    AccuracyMetric, F1Metric, MatthewsCorrelationMetric, ConfusionMatrixMetric
+)
+from .generation import (
+    ROUGEMetric, BLEUMetric, BERTScoreMetric, METEORMetric
+)
+from .question_answering import (
+    ExactMatchMetric, F1ScoreQAMetric
+)
+from .code_evaluation import (
+    PassAtKMetric, SyntaxValidityMetric
+)
+from .aggregators import MetricAggregator
+from .registry import MetricRegistry
