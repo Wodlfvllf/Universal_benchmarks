@@ -5,40 +5,7 @@ import tempfile
 from typing import List, Dict
 import numpy as np
 from .base import BaseMetric, MetricResult
-
-def combinations(n: int, k: int) -> int:
-    """Calculates the number of combinations (n choose k)."""
-    if k < 0 or k > n:
-        return 0
-    if k == 0 or k == n:
-        return 1
-    if k > n // 2:
-        k = n - k
-    
-    res = 1
-    for i in range(k):
-        res = res * (n - i) // (i + 1)
-    return res
-
-def calculate_pass_at_k(n: int, c: int, k: int) -> float:
-    """
-    Calculates the pass@k metric.
-
-    Args:
-        n: The total number of generated samples per problem.
-        c: The number of correct samples that pass the tests.
-        k: The k in pass@k.
-
-    Returns:
-        The pass@k score.
-    """
-    if n < k:
-        return 0.0
-    
-    if c < k:
-        return 1.0 - combinations(n - c, k) / combinations(n, k)
-    else:
-        return 1.0
+from .pass_at_k import estimate_pass_at_k
 
 class PassAtKMetric(BaseMetric):
     """Pass@k metric for code generation"""
@@ -91,9 +58,7 @@ class PassAtKMetric(BaseMetric):
                 
             # Calculate pass@k for this problem
             for k in self.k_values:
-                n = len(results)
-                c = sum(results)
-                score = calculate_pass_at_k(n, c, k)
+                score = estimate_pass_at_k(results, k)
                 pass_at_k[k].append(score)
                 
         # Average across problems
