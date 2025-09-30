@@ -12,6 +12,9 @@ from .question_answering import (
 from .code_evaluation import (
     PassAtKMetric, SyntaxValidityMetric
 )
+from .regression import (
+    PearsonCorrelationMetric, SpearmanCorrelationMetric
+)
 
 class MetricRegistry:
     """Central registry for metrics"""
@@ -42,6 +45,10 @@ class MetricRegistry:
         'pass@10': lambda: PassAtKMetric(k_values=[10]),
         'pass@100': lambda: PassAtKMetric(k_values=[100]),
         'syntax_validity': SyntaxValidityMetric,
+
+        # Regression metrics
+        'pearson': PearsonCorrelationMetric,
+        'spearman': SpearmanCorrelationMetric,
     }
     
     @classmethod

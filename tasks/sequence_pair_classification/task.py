@@ -56,17 +56,10 @@ class SequencePairClassificationTask(BaseTask):
         for i in range(0, len(inputs), batch_size):
             batch = inputs[i:i+batch_size]
             
-            if hasattr(model, 'classify_sequence_pair'):
-                # Direct classification method
-                batch_outputs = model.classify_sequence_pair(
-                    [(inp.data['sentence1'], inp.data['sentence2']) for inp in batch],
-                    candidate_labels=list(self.label_map.keys())
-                )
-            else:
-                # Use generation and parse
-                prompts = [self.format_prompt(inp) for inp in batch]
-                raw_outputs = model.generate(prompts)
-                batch_outputs = [self.parse_output(out) for out in raw_outputs]
+            batch_outputs = model.classify(
+                [(inp.data['sentence1'], inp.data['sentence2']) for inp in batch],
+                candidate_labels=list(self.label_map.keys())
+            )
             
             outputs.extend(batch_outputs)
             

@@ -11,5 +11,8 @@ from .question_answering import (
 from .code_evaluation import (
     PassAtKMetric, SyntaxValidityMetric
 )
+from .regression import (
+    PearsonCorrelationMetric, SpearmanCorrelationMetric
+)
 from .aggregators import MetricAggregator
 from .registry import MetricRegistry

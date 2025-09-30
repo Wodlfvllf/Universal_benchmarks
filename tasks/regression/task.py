@@ -1,5 +1,6 @@
 from typing import List, Dict, Any
 from tasks.base import BaseTask, TaskInput, TaskOutput
+from models.interfaces.base import ModelOutput
 from scipy.stats import pearsonr, spearmanr
 
 class RegressionTask(BaseTask):
@@ -49,21 +50,21 @@ class RegressionTask(BaseTask):
         
         prompts = [self.format_prompt(inp) for inp in inputs]
         
-        for i in range(0, len(prompts), batch_size):
-            batch_prompts = prompts[i:i+batch_size]
+        for i in range(0, len(inputs), batch_size):
+            batch = inputs[i:i+batch_size]
             
-            generations = model.generate(batch_prompts)
+            batch_outputs = model.classify(
+                [inp.data for inp in batch]
+            )
             
-            for j, generation in enumerate(generations):
-                outputs.append(self.parse_output(generation))
-            
-        return outputs
+            for output in batch_outputs:
+                outputs.append(self.parse_output(output))
 
-    def parse_output(self, raw_output: str) -> TaskOutput:
+    def parse_output(self, raw_output: ModelOutput) -> TaskOutput:
         """Parse regression output"""
         try:
-            prediction = float(raw_output.strip())
-        except ValueError:
+            prediction = float(raw_output.predictions)
+        except (ValueError, TypeError):
             prediction = 0.0
             
         return TaskOutput(predictions=prediction)
