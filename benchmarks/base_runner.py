@@ -79,8 +79,6 @@ class BenchmarkRunner:
         # Calculate metrics
         metrics = {}
         references = [inp.labels for inp in inputs]
-        print(f"Predictions: {predictions}")
-        print(f"References: {references}")
         for metric_name in subtask_config['metrics']:
             metric_fn = MetricRegistry.get_metric(metric_name)
             result = metric_fn.compute(predictions=[p.predictions for p in predictions], references=references)

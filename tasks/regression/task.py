@@ -56,7 +56,7 @@ class RegressionTask(BaseTask):
             batch_outputs = model.classify(
                 [inp.data for inp in batch]
             )
-            
+            print(f"Batch outputs: {batch_outputs}")
             for output in batch_outputs:
                 outputs.append(self.parse_output(output))
 
