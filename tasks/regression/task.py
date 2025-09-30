@@ -1,5 +1,5 @@
 from typing import List, Dict, Any
-from ..base import BaseTask, TaskInput, TaskOutput
+from tasks.base import BaseTask, TaskInput, TaskOutput
 from scipy.stats import pearsonr, spearmanr
 
 class RegressionTask(BaseTask):

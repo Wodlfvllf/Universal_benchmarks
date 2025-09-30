@@ -1,6 +1,6 @@
 from typing import List, Dict, Any
 from ..base import BaseTask, TaskInput, TaskOutput
-from ...metrics.registry import MetricRegistry
+from metrics.registry import MetricRegistry
 
 class DocumentQATask(BaseTask):
     """Implementation for document question answering tasks"""

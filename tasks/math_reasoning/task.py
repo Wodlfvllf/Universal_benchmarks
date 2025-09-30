@@ -1,7 +1,7 @@
 from typing import List, Dict, Any
 import re
 from ..base import BaseTask, TaskInput, TaskOutput
-from ...metrics.registry import MetricRegistry
+from metrics.registry import MetricRegistry
 
 class MathReasoningTask(BaseTask):
     """Implementation for math reasoning tasks"""

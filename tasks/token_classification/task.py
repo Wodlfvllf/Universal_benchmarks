@@ -1,6 +1,6 @@
 from typing import List, Dict, Any
 from ..base import BaseTask, TaskInput, TaskOutput
-from ...metrics.registry import MetricRegistry
+from metrics.registry import MetricRegistry
 from seqeval.metrics import f1_score, precision_score, recall_score
 
 class TokenClassificationTask(BaseTask):
