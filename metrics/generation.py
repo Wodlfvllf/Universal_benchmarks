@@ -1,9 +1,10 @@
 
 from rouge_score import rouge_scorer
 from nltk.translate.bleu_score import sentence_bleu, corpus_bleu
+from nltk.translate.meteor_score import meteor_score
 import bert_score
 import numpy as np
-from typing import List, Dict
+from typing import List, Dict, Optional
 from .base import BaseMetric, MetricResult
 
 class ROUGEMetric(BaseMetric):
@@ -113,4 +114,30 @@ class BERTScoreMetric(BaseMetric):
                 'f1': F1.mean().item()
             },
             per_sample_scores=F1.tolist()
+        )
+
+class METEORMetric(BaseMetric):
+    """METEOR score for text generation"""
+    
+    def __init__(self, **kwargs):
+        super().__init__("meteor", **kwargs)
+        
+    def compute(self,
+               predictions: List[str],
+               references: List[str],
+               **kwargs) -> MetricResult:
+        """Compute METEOR score"""
+        
+        # Tokenize
+        pred_tokens = [pred.split() for pred in predictions]
+        ref_tokens = [ref.split() for ref in references]
+        
+        # Calculate METEOR score
+        scores = []
+        for pred, ref in zip(pred_tokens, ref_tokens):
+            scores.append(meteor_score([ref], pred))
+            
+        return MetricResult(
+            score=np.mean(scores),
+            per_sample_scores=scores
         )
