@@ -1,62 +1,217 @@
-from .base import BaseModel
-from typing import List, Dict, Any, Optional
 import torch
-from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline
+from transformers import (
+    AutoModelForCausalLM,
+    AutoModelForSequenceClassification,
+    AutoTokenizer,
+    pipeline,
+    GenerationConfig
+)
+from typing import List, Dict, Any, Optional, Union
+import numpy as np
+from .base import BaseModel, ModelConfig, ModelType, ModelOutput
 
 class HuggingFaceModel(BaseModel):
-    """A wrapper for Hugging Face Hub models."""
-
-    def _load_model(self) -> Any:
-        """Loads the model and tokenizer from Hugging Face Hub."""
-        model_kwargs = self.config.get('model_kwargs', {})
-        self.device = self.config.get('device', 'cuda' if torch.cuda.is_available() else 'cpu')
+    """Interface for HuggingFace Transformers models"""
+    
+    def setup(self):
+        """Initialize HuggingFace model"""
+        from transformers import AutoConfig
         
-        model = AutoModelForCausalLM.from_pretrained(self.model_name, **model_kwargs).to(self.device)
-        self.tokenizer = AutoTokenizer.from_pretrained(self.model_name)
-
-        if self.tokenizer.pad_token is None:
-            self.tokenizer.pad_token = self.tokenizer.eos_token
-
-        return model
-
-    def generate(self, inputs: List[str], **kwargs) -> List[str]:
-        """
-        Generates text using the loaded Hugging Face model.
-        """
-        # Default generation parameters
-        default_kwargs = {
-            'max_length': self.config.get('max_length', 512),
-            'temperature': self.config.get('temperature', 0.7),
-            'top_p': self.config.get('top_p', 0.95),
-            'pad_token_id': self.tokenizer.pad_token_id
-        }
-        # Override defaults with any provided kwargs
-        default_kwargs.update(kwargs)
-
-        # Tokenize the inputs
-        tokenized_inputs = self.tokenizer(inputs, return_tensors='pt', padding=True).to(self.device)
-
-        # Generate outputs
-        output_ids = self.model.generate(**tokenized_inputs, **default_kwargs)
-
-        # Decode the outputs
-        decoded_outputs = self.tokenizer.batch_decode(output_ids, skip_special_tokens=True)
-
-        # Clean up the output to remove the prompt
-        cleaned_outputs = []
-        for i, output in enumerate(decoded_outputs):
-            # The generated text includes the prompt, so we remove it.
-            prompt_text = inputs[i]
-            if output.startswith(prompt_text):
-                cleaned_outputs.append(output[len(prompt_text):].strip())
+        # Load tokenizer
+        self.tokenizer = AutoTokenizer.from_pretrained(
+            self.config.model_name,
+            cache_dir=self.config.cache_dir,
+            trust_remote_code=True
+        )
+        
+        # Determine model class based on task
+        config = AutoConfig.from_pretrained(self.config.model_name)
+        
+        if self.config.model_type == ModelType.TEXT:
+            if hasattr(config, 'num_labels'):
+                # Classification model
+                self.model = AutoModelForSequenceClassification.from_pretrained(
+                    self.config.model_name,
+                    cache_dir=self.config.cache_dir,
+                    torch_dtype=self._get_torch_dtype(),
+                    device_map="auto" if self.config.device == "cuda" else None,
+                    trust_remote_code=True
+                )
             else:
-                cleaned_outputs.append(output.strip())
+                # Generation model
+                self.model = AutoModelForCausalLM.from_pretrained(
+                    self.config.model_name,
+                    cache_dir=self.config.cache_dir,
+                    torch_dtype=self._get_torch_dtype(),
+                    device_map="auto" if self.config.device == "cuda" else None,
+                    trust_remote_code=True
+                )
+                
+        # Move to device if needed
+        if self.config.device == "cuda" and torch.cuda.is_available():
+            self.model = self.model.cuda()
+            
+        # Set eval mode
+        self.model.eval()
         
-        return cleaned_outputs
-
-    def classify(self, inputs: List[str], candidate_labels: List[str], **kwargs) -> List[Dict[str, Any]]:
-        """
-        Performs zero-shot classification using a pipeline.
-        """
-        classifier = pipeline("zero-shot-classification", model=self.model, tokenizer=self.tokenizer, device=self.device)
-        return classifier(inputs, candidate_labels, **kwargs)
+    def _get_torch_dtype(self):
+        """Get torch dtype from config"""
+        dtype_map = {
+            "float32": torch.float32,
+            "float16": torch.float16,
+            "bfloat16": torch.bfloat16,
+            "int8": torch.int8
+        }
+        return dtype_map.get(self.config.precision, torch.float32)
+        
+    def generate(self, 
+                prompts: Union[str, List[str]], 
+                max_new_tokens: int = 512,
+                temperature: float = 0.7,
+                top_p: float = 0.95,
+                do_sample: bool = True,
+                **kwargs) -> Union[str, List[str]]:
+        """Generate text completions"""
+        
+        # Handle single string input
+        single_input = isinstance(prompts, str)
+        if single_input:
+            prompts = [prompts]
+            
+        # Tokenize inputs
+        inputs = self.tokenizer(
+            prompts,
+            return_tensors="pt",
+            padding=True,
+            truncation=True,
+            max_length=self.config.max_length
+        )
+        
+        if self.config.device == "cuda":
+            inputs = {k: v.cuda() for k, v in inputs.items()}
+            
+        # Generate
+        with torch.no_grad():
+            generation_config = GenerationConfig(
+                max_new_tokens=max_new_tokens,
+                temperature=temperature,
+                top_p=top_p,
+                do_sample=do_sample,
+                pad_token_id=self.tokenizer.pad_token_id,
+                eos_token_id=self.tokenizer.eos_token_id,
+                **kwargs
+            )
+            
+            outputs = self.model.generate(
+                **inputs,
+                generation_config=generation_config
+            )
+            
+        # Decode outputs
+        generated_texts = self.tokenizer.batch_decode(
+            outputs[:, inputs['input_ids'].shape[1]:],  # Remove prompt
+            skip_special_tokens=True
+        )
+        
+        return generated_texts[0] if single_input else generated_texts
+        
+    def classify(self,
+                inputs: Union[str, List[str]],
+                labels: Optional[List[str]] = None,
+                return_all_scores: bool = False,
+                **kwargs) -> ModelOutput:
+        """Perform classification"""
+        
+        # Handle single input
+        single_input = isinstance(inputs, str)
+        if single_input:
+            inputs = [inputs]
+            
+        # Tokenize
+        encoded = self.tokenizer(
+            inputs,
+            return_tensors="pt",
+            padding=True,
+            truncation=True,
+            max_length=self.config.max_length
+        )
+        
+        if self.config.device == "cuda":
+            encoded = {k: v.cuda() for k, v in encoded.items()}
+            
+        # Get model outputs
+        with torch.no_grad():
+            outputs = self.model(**encoded)
+            
+        logits = outputs.logits.cpu().numpy()
+        probabilities = torch.softmax(outputs.logits, dim=-1).cpu().numpy()
+        predictions = np.argmax(logits, axis=-1)
+        
+        # Map to labels if provided
+        if labels:
+            predictions = [labels[pred] for pred in predictions]
+            
+        return ModelOutput(
+            predictions=predictions[0] if single_input else predictions,
+            logits=logits[0] if single_input else logits,
+            probabilities=probabilities[0] if single_input else probabilities
+        )
+        
+    def embed(self,
+             inputs: Union[str, List[str]],
+             pooling: str = "mean",
+             **kwargs) -> np.ndarray:
+        """Generate embeddings"""
+        
+        # Handle single input
+        single_input = isinstance(inputs, str)
+        if single_input:
+            inputs = [inputs]
+            
+        # Tokenize
+        encoded = self.tokenizer(
+            inputs,
+            return_tensors="pt",
+            padding=True,
+            truncation=True,
+            max_length=self.config.max_length
+        )
+        
+        if self.config.device == "cuda":
+            encoded = {k: v.cuda() for k, v in encoded.items()}
+            
+        # Get embeddings
+        with torch.no_grad():
+            outputs = self.model(**encoded, output_hidden_states=True)
+            
+        # Extract embeddings from last hidden state
+        hidden_states = outputs.hidden_states[-1]
+        
+        # Apply pooling
+        if pooling == "mean":
+            # Mean pooling over sequence length
+            attention_mask = encoded['attention_mask'].unsqueeze(-1)
+            embeddings = (hidden_states * attention_mask).sum(1) / attention_mask.sum(1)
+        elif pooling == "cls":
+            # Use CLS token
+            embeddings = hidden_states[:, 0, :]
+        elif pooling == "max":
+            # Max pooling
+            embeddings = hidden_states.max(dim=1)[0]
+        else:
+            raise ValueError(f"Unknown pooling method: {pooling}")
+            
+        embeddings = embeddings.cpu().numpy()
+        
+        return embeddings[0] if single_input else embeddings
+        
+    def get_model_info(self) -> Dict[str, Any]:
+        """Get model information"""
+        return {
+            "name": self.config.model_name,
+            "type": "huggingface",
+            "parameters": sum(p.numel() for p in self.model.parameters()),
+            "device": str(self.model.device),
+            "precision": self.config.precision,
+            "max_length": self.config.max_length
+        }

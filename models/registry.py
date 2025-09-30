@@ -4,6 +4,7 @@ from .interfaces.huggingface import HuggingFaceModel
 from .interfaces.openai import OpenAIModel
 from .interfaces.anthropic import AnthropicModel
 from .interfaces.google import GoogleModel
+from .adapters.multimodal_model import MultimodalModelAdapter
 
 class ModelRegistry:
     """Central registry for model implementations"""
@@ -13,6 +14,7 @@ class ModelRegistry:
         'openai': OpenAIModel,
         'anthropic': AnthropicModel,
         'google': GoogleModel,
+        'multimodal': MultimodalModelAdapter,
     }
     
     MODEL_CONFIGS: Dict[str, Dict[str, Any]] = {
@@ -56,6 +58,44 @@ class ModelRegistry:
             'model_name': 'mistralai/Mistral-7B-v0.1',
             'max_length': 32768
         },
+        
+        # Vision-Language Models
+        'gpt-4-vision': {
+            'implementation': 'openai',
+            'model_type': ModelType.MULTIMODAL,
+            'max_length': 4096
+        },
+        'claude-3-vision': {
+            'implementation': 'anthropic',
+            'model_type': ModelType.MULTIMODAL,
+            'max_length': 200000
+        },
+        'llava-v1.6': {
+            'implementation': 'multimodal',
+            'model_type': ModelType.MULTIMODAL,
+            'model_name': 'liuhaotian/llava-v1.6-34b',
+            'max_length': 4096
+        },
+        'blip-2': {
+            'implementation': 'multimodal',
+            'model_type': ModelType.MULTIMODAL,
+            'model_name': 'Salesforce/blip2-opt-2.7b',
+            'max_length': 512
+        },
+        
+        # Code Models
+        'codegen-16B': {
+            'implementation': 'huggingface',
+            'model_type': ModelType.CODE,
+            'model_name': 'Salesforce/codegen-16B-multi',
+            'max_length': 2048
+        },
+        'starcoder': {
+            'implementation': 'huggingface',
+            'model_type': ModelType.CODE,
+            'model_name': 'bigcode/starcoder',
+            'max_length': 8192
+        }
     }
     
     @classmethod

@@ -1,9 +1,9 @@
 
 from abc import ABC, abstractmethod
 from typing import Dict, Any, Optional
-from ..models.registry import ModelRegistry
-from ..datasets.registry import DatasetRegistry
-from ..tasks.registry import TaskRegistry
+from models.registry import ModelRegistry
+from datasets.registry import DatasetRegistry
+from tasks.registry import TaskRegistry
 
 class BaseBenchmarkRunner(ABC):
     """Abstract base class for benchmark runners."""
