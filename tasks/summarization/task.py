@@ -2,7 +2,7 @@
 import numpy as np
 from typing import List, Dict, Any
 from ..base import BaseTask, TaskInput, TaskOutput
-from ...metrics.registry import MetricRegistry
+from metrics.registry import MetricRegistry
 
 class SummarizationTask(BaseTask):
     """Implementation for summarization tasks"""
