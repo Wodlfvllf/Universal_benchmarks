@@ -151,11 +151,11 @@ class HuggingFaceModel(BaseModel):
         if labels:
             predictions = [labels[pred] for pred in predictions]
             
-        return ModelOutput(
-            predictions=predictions[0] if single_input else predictions,
-            logits=logits[0] if single_input else logits,
-            probabilities=probabilities[0] if single_input else probabilities
-        )
+        return [ModelOutput(
+            predictions=predictions[i],
+            logits=logits[i],
+            probabilities=probabilities[i]
+        ) for i in range(len(predictions))]
         
     def embed(self,
              inputs: Union[str, List[str]],

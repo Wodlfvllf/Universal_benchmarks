@@ -65,7 +65,8 @@ class BenchmarkRunner:
         # Prepare inputs
         inputs = task.prepare_inputs(
             dataset['validation'], 
-            **subtask_config
+            input_columns=subtask_config['input_columns'],
+            label_column=subtask_config.get('label_column')
         )
         
         # Get predictions

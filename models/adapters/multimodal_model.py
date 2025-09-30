@@ -2,6 +2,7 @@ from PIL import Image
 import torch
 from typing import List, Dict, Any, Optional, Union, Tuple
 from ..interfaces.base import BaseModel, ModelConfig, ModelOutput
+import numpy as np
 
 class MultimodalModelAdapter(BaseModel):
     """Adapter for vision-language models"""
