@@ -4,7 +4,7 @@ import ast
 import numpy as np
 from typing import List, Dict, Any
 
-from ....metrics.pass_at_k import estimate_pass_at_k
+from metrics.pass_at_k import estimate_pass_at_k
 
 def execute_code(code: str, test_code: str, timeout: float) -> Dict[str, Any]:
     """Execute generated code against a test case in a sandboxed environment."""
