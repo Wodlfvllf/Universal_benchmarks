@@ -18,3 +18,9 @@ subtasks:
     metrics: ["accuracy", "f1"]
     input_columns: ["sentence"]
     label_column: "label"
+
+evaluation:
+  batch_size: 32
+
+output:
+  save_raw_predictions: true
