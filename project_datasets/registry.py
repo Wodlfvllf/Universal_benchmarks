@@ -67,6 +67,8 @@ class DatasetRegistry:
             raise ValueError(f"Unknown dataset: {dataset_name}")
             
         config = cls.DATASET_CONFIGS[dataset_name].copy()
+        if 'subtasks' in config:
+            config.pop('subtasks')
         loader_name = config.pop('loader')
         
         if loader_name not in cls.LOADERS:
