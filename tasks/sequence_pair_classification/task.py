@@ -10,12 +10,16 @@ class SequencePairClassificationTask(BaseTask):
         self.num_labels = None
         self.label_map = {}
         
-    def prepare_inputs(self, dataset: Any, 
-                      input_columns: List[str], 
+    def prepare_inputs(self, dataset: Any,
+                      input_columns: List[str],
                       label_column: str = None) -> List[TaskInput]:
-        """Prepare sequence pair classification inputs"""
+        """Prepare classification inputs"""
         inputs = []
         
+        # Handle single or multiple input columns
+        if len(input_columns) != 2:
+            raise ValueError("Sequence pair classification requires two input columns")
+
         sentence1 = dataset[input_columns[0]]
         sentence2 = dataset[input_columns[1]]
         
@@ -32,7 +36,7 @@ class SequencePairClassificationTask(BaseTask):
         # Create TaskInput objects
         for i in range(len(sentence1)):
             inputs.append(TaskInput(
-                data={'sentence1': sentence1[i], 'sentence2': sentence2[i]},
+                data=[sentence1[i], sentence2[i]],
                 labels=labels[i] if labels else None,
                 metadata={'index': i}
             ))
@@ -40,15 +44,12 @@ class SequencePairClassificationTask(BaseTask):
         return inputs
     
     def format_prompt(self, input_data: TaskInput) -> str:
-        """Format for zero/few-shot sequence pair classification"""
+        """Format for zero/few-shot classification"""
         if self.config.get('prompt_template'):
-            return self.config['prompt_template'].format(
-                sentence1=input_data.data['sentence1'], 
-                sentence2=input_data.data['sentence2']
-            )
-        return f"Sentence 1: {input_data.data['sentence1']}\nSentence 2: {input_data.data['sentence2']}"
+            return self.config['prompt_template'].format(sentence1=input_data.data[0], sentence2=input_data.data[1])
+        return f"{input_data.data[0]}\n{input_data.data[1]}"
     
-    def predict(self, model: Any, inputs: List[TaskInput], 
+    def predict(self, model: Any, inputs: List[TaskInput],
                batch_size: int = 32) -> List[TaskOutput]:
         """Generate classification predictions"""
         outputs = []
@@ -56,10 +57,17 @@ class SequencePairClassificationTask(BaseTask):
         for i in range(0, len(inputs), batch_size):
             batch = inputs[i:i+batch_size]
             
-            batch_outputs = model.classify(
-                [(inp.data['sentence1'], inp.data['sentence2']) for inp in batch],
-                candidate_labels=list(self.label_map.keys())
-            )
+            if hasattr(model, 'classify'):
+                # Direct classification method
+                batch_outputs = model.classify(
+                    [inp.data for inp in batch],
+                    labels=list(self.label_map.keys())
+                )
+            else:
+                # Use generation and parse
+                prompts = [self.format_prompt(inp) for inp in batch]
+                raw_outputs = model.generate(prompts)
+                batch_outputs = [self.parse_output(out) for out in raw_outputs]
             
             outputs.extend(batch_outputs)
             
@@ -67,8 +75,10 @@ class SequencePairClassificationTask(BaseTask):
     
     def parse_output(self, raw_output: str) -> TaskOutput:
         """Parse classification output"""
+        # Try to extract label from generated text
         predicted_label = raw_output.strip().lower()
         
+        # Map to known labels
         best_match = None
         for label in self.label_map.keys():
             if str(label).lower() in predicted_label:
@@ -78,11 +88,12 @@ class SequencePairClassificationTask(BaseTask):
         if best_match:
             prediction = self.label_map[best_match]
         else:
+            # Default to first label if no match
             prediction = 0
             
         return TaskOutput(predictions=prediction)
     
-    def compute_metrics(self, predictions: List[TaskOutput], 
+    def compute_metrics(self, predictions: List[TaskOutput],
                        references: List[Any]) -> Dict[str, float]:
         """Compute classification metrics"""
         from sklearn.metrics import accuracy_score, f1_score, precision_recall_fscore_support
@@ -94,6 +105,7 @@ class SequencePairClassificationTask(BaseTask):
         }
         
         if self.num_labels == 2:
+            # Binary classification
             metrics['f1'] = f1_score(references, preds, average='binary')
             precision, recall, f1, _ = precision_recall_fscore_support(
                 references, preds, average='binary'
@@ -101,6 +113,7 @@ class SequencePairClassificationTask(BaseTask):
             metrics['precision'] = precision
             metrics['recall'] = recall
         else:
+            # Multi-class
             metrics['f1_macro'] = f1_score(references, preds, average='macro')
             metrics['f1_weighted'] = f1_score(references, preds, average='weighted')
             

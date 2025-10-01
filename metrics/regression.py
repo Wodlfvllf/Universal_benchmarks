@@ -1,7 +1,7 @@
-from scipy.stats import pearsonr, spearmanr
 from .base import BaseMetric, MetricResult
 from typing import List, Union
 import numpy as np
+from scipy.stats import pearsonr, spearmanr
 
 class PearsonCorrelationMetric(BaseMetric):
     """Pearson correlation metric for regression"""
@@ -13,13 +13,13 @@ class PearsonCorrelationMetric(BaseMetric):
                predictions: Union[List, np.ndarray],
                references: Union[List, np.ndarray],
                **kwargs) -> MetricResult:
-        """Compute Pearson correlation score"""
+        """Compute Pearson correlation"""
         
         predictions, references = self.validate_inputs(predictions, references)
         
-        score, _ = pearsonr(references, predictions)
+        correlation, _ = pearsonr(references, predictions)
         
-        return MetricResult(score=score)
+        return MetricResult(score=correlation)
 
 class SpearmanCorrelationMetric(BaseMetric):
     """Spearman correlation metric for regression"""
@@ -31,10 +31,10 @@ class SpearmanCorrelationMetric(BaseMetric):
                predictions: Union[List, np.ndarray],
                references: Union[List, np.ndarray],
                **kwargs) -> MetricResult:
-        """Compute Spearman correlation score"""
+        """Compute Spearman correlation"""
         
         predictions, references = self.validate_inputs(predictions, references)
         
-        score, _ = spearmanr(references, predictions)
+        correlation, _ = spearmanr(references, predictions)
         
-        return MetricResult(score=score)
+        return MetricResult(score=correlation)

@@ -12,11 +12,68 @@ dataset:
   cache_dir: "${CACHE_DIR}/project_datasets/glue"
   
 subtasks:
+  - name: "cola"
+    task_type: "classification"
+    dataset_config: "cola"
+    metrics: ["matthews_correlation", "accuracy"]
+    input_columns: ["sentence"]
+    label_column: "label"
+    
   - name: "sst2"
     task_type: "classification"
     dataset_config: "sst2"
     metrics: ["accuracy", "f1"]
     input_columns: ["sentence"]
+    label_column: "label"
+    
+  - name: "mrpc"
+    task_type: "sequence_pair_classification"
+    dataset_config: "mrpc"
+    metrics: ["accuracy", "f1"]
+    input_columns: ["sentence1", "sentence2"]
+    label_column: "label"
+    
+  - name: "stsb"
+    task_type: "regression"
+    dataset_config: "stsb"
+    metrics: ["pearson", "spearman"]
+    input_columns: ["sentence1", "sentence2"]
+    label_column: "label"
+    
+  - name: "qqp"
+    task_type: "sequence_pair_classification"
+    dataset_config: "qqp"
+    metrics: ["accuracy", "f1"]
+    input_columns: ["question1", "question2"]
+    label_column: "label"
+    
+  - name: "mnli"
+    task_type: "nli"
+    dataset_config: "mnli"
+    metrics: ["accuracy"]
+    input_columns: ["premise", "hypothesis"]
+    label_column: "label"
+    validation_sets: ["validation_matched", "validation_mismatched"]
+    
+  - name: "qnli"
+    task_type: "sequence_pair_classification"
+    dataset_config: "qnli"
+    metrics: ["accuracy"]
+    input_columns: ["question", "sentence"]
+    label_column: "label"
+    
+  - name: "rte"
+    task_type: "nli"
+    dataset_config: "rte"
+    metrics: ["accuracy"]
+    input_columns: ["sentence1", "sentence2"]
+    label_column: "label"
+    
+  - name: "wnli"
+    task_type: "nli"
+    dataset_config: "wnli"
+    metrics: ["accuracy"]
+    input_columns: ["sentence1", "sentence2"]
     label_column: "label"
 
 evaluation:

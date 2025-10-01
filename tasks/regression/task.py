@@ -1,7 +1,5 @@
 from typing import List, Dict, Any
 from tasks.base import BaseTask, TaskInput, TaskOutput
-from models.interfaces.base import ModelOutput
-from scipy.stats import pearsonr, spearmanr
 
 class RegressionTask(BaseTask):
     """Implementation for regression tasks"""
@@ -48,23 +46,22 @@ class RegressionTask(BaseTask):
         """Generate regression predictions"""
         outputs = []
         
-        prompts = [self.format_prompt(inp) for inp in inputs]
-        
         for i in range(0, len(inputs), batch_size):
             batch = inputs[i:i+batch_size]
             
-            batch_outputs = model.classify(
-                [inp.data for inp in batch]
-            )
-            print(f"Batch outputs: {batch_outputs}")
-            for output in batch_outputs:
-                outputs.append(self.parse_output(output))
-
-    def parse_output(self, raw_output: ModelOutput) -> TaskOutput:
+            prompts = [self.format_prompt(inp) for inp in batch]
+            raw_outputs = model.generate(prompts)
+            batch_outputs = [self.parse_output(out) for out in raw_outputs]
+            
+            outputs.extend(batch_outputs)
+            
+        return outputs
+    
+    def parse_output(self, raw_output: str) -> TaskOutput:
         """Parse regression output"""
         try:
-            prediction = float(raw_output.predictions)
-        except (ValueError, TypeError):
+            prediction = float(raw_output.strip())
+        except ValueError:
             prediction = 0.0
             
         return TaskOutput(predictions=prediction)
@@ -72,13 +69,16 @@ class RegressionTask(BaseTask):
     def compute_metrics(self, predictions: List[TaskOutput], 
                        references: List[Any]) -> Dict[str, float]:
         """Compute regression metrics"""
+        from scipy.stats import pearsonr, spearmanr
         
         preds = [p.predictions for p in predictions]
         
         pearson_corr, _ = pearsonr(references, preds)
         spearman_corr, _ = spearmanr(references, preds)
         
-        return {
+        metrics = {
             'pearson': pearson_corr,
-            'spearman': spearman_corr,
+            'spearman': spearman_corr
         }
+        
+        return metrics
