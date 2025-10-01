@@ -1,8 +1,8 @@
 from typing import Dict, List, Any, Optional
 
-from ..base import BaseTask, TaskInput, TaskOutput
-from ..metrics.generation import BLEUMetric
-from ..metrics.chrf import CHRFMetric
+from tasks.base import BaseTask, TaskInput, TaskOutput
+from metrics.generation import BLEUMetric
+from metrics.chrf import CHRFMetric
 
 class TranslationTask(BaseTask):
     """A task for machine translation."""
