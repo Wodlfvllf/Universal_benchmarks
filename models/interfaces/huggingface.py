@@ -23,6 +23,8 @@ class HuggingFaceModel(BaseModel):
             cache_dir=self.config.cache_dir,
             trust_remote_code=True
         )
+        if self.tokenizer.pad_token is None:
+            self.tokenizer.pad_token = self.tokenizer.eos_token
         
         # Determine model class based on task
         config = AutoConfig.from_pretrained(self.config.model_name)

@@ -46,6 +46,7 @@ def register_all_tasks():
     from tasks.nli.task import NLITask
     from tasks.sentence_similarity.task import SentenceSimilarityTask
     from tasks.boolq.task import BoolQTask
+    from tasks.copa.task import CopaTask
     
     TaskRegistry.register('classification', ClassificationTask)
     TaskRegistry.register('multiple_choice', MultipleChoiceQATask)
@@ -67,5 +68,6 @@ def register_all_tasks():
     TaskRegistry.register('nli', NLITask)
     TaskRegistry.register('sentence_similarity', SentenceSimilarityTask)
     TaskRegistry.register('boolq', BoolQTask)
+    TaskRegistry.register('copa', CopaTask)
     
 register_all_tasks()

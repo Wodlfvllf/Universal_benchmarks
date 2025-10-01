@@ -12,11 +12,12 @@ dataset:
   cache_dir: "${CACHE_DIR}/project_datasets/super_glue"
   
 subtasks:
-  - name: "boolq"
-    task_type: "boolq"
-    dataset_config: "boolq"
+  - name: "copa"
+    task_type: "copa"
+    model: "gpt2"
+    dataset_config: "copa"
     metrics: ["accuracy"]
-    input_columns: ["question", "passage"]
+    input_columns: ["premise", "choice1", "choice2"]
     label_column: "label"
 
 evaluation:

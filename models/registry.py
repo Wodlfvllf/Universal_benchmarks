@@ -64,6 +64,12 @@ class ModelRegistry:
             'model_name': 'sentence-transformers/all-MiniLM-L6-v2',
             'max_length': 512
         },
+        'gpt2': {
+            'implementation': 'huggingface',
+            'model_type': ModelType.TEXT,
+            'model_name': 'gpt2',
+            'max_length': 1024
+        },
         
         # Vision-Language Models
         'gpt-4-vision': {
