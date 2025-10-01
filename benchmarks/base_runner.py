@@ -4,10 +4,11 @@ from pathlib import Path
 from dataclasses import dataclass
 from abc import ABC, abstractmethod
 
-from datasets import load_dataset
+
 from tasks.registry import TaskRegistry
 from metrics.registry import MetricRegistry
 from models.registry import ModelRegistry
+from project_datasets.registry import DatasetRegistry
 from utils.logging import get_logger
 
 logger = get_logger(__name__)

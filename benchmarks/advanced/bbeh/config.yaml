@@ -13,7 +13,7 @@ dataset:
   name: "bbeh"
   source: "huggingface"
   path: "google-deepmind/bbeh"
-  cache_dir: "/root/benchmarks/universal-model-benchmarks/datasets/cache"
+  cache_dir: "/root/benchmarks/universal-model-benchmarks/project_datasets/cache"
 
 subtasks:
   - name: "causal_judgment"

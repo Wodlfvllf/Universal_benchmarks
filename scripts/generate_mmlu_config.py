@@ -72,7 +72,7 @@ benchmark_config = {
     "dataset": {
         "source": "huggingface",
         "path": "cais/mmlu",
-        "cache_dir": "${CACHE_DIR}/datasets/mmlu",
+        "cache_dir": "${CACHE_DIR}/project_datasets/mmlu",
     },
     "subtasks": [],
     "evaluation": {

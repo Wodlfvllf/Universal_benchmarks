@@ -9,7 +9,7 @@ benchmark:
 dataset:
   source: "huggingface"
   path: "openai/openai_humaneval"
-  cache_dir: "${CACHE_DIR}/datasets/humaneval"
+  cache_dir: "${CACHE_DIR}/project_datasets/humaneval"
 
 subtasks:
   - name: "default"

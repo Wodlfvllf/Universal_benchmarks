@@ -15,7 +15,7 @@ dataset:
   name: "arc_agi"
   source: "huggingface"
   path: "allenai/arc_agi"
-  cache_dir: "/root/benchmarks/universal-model-benchmarks/datasets/cache"
+  cache_dir: "/root/benchmarks/universal-model-benchmarks/project_datasets/cache"
 
 subtasks:
   - name: "default"

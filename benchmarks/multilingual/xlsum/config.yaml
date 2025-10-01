@@ -13,7 +13,7 @@ dataset:
   name: "xlsum"
   source: "huggingface"
   path: "csebuetnlp/xlsum"
-  cache_dir: "/root/benchmarks/universal-model-benchmarks/datasets/cache"
+  cache_dir: "/root/benchmarks/universal-model-benchmarks/project_datasets/cache"
 
 subtasks:
   - name: "english"

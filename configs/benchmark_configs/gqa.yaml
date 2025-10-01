@@ -9,7 +9,7 @@ benchmark:
 dataset:
   source: "huggingface"
   path: "lmms-lab/GQA"
-  cache_dir: "${CACHE_DIR}/datasets/gqa"
+  cache_dir: "${CACHE_DIR}/project_datasets/gqa"
 
 subtasks:
   - name: "default"

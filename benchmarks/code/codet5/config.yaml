@@ -12,7 +12,7 @@ dataset:
   name: "code_x_glue_ct_code_to_text"
   source: "huggingface"
   path: "code_x_glue_ct_code_to_text"
-  cache_dir: "/root/benchmarks/universal-model-benchmarks/datasets/cache"
+  cache_dir: "/root/benchmarks/universal-model-benchmarks/project_datasets/cache"
 
 subtasks:
   - name: "code-to-text"

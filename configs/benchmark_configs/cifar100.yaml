@@ -9,7 +9,7 @@ benchmark:
 dataset:
   source: "huggingface"
   path: "cifar100"
-  cache_dir: "${CACHE_DIR}/datasets/cifar100"
+  cache_dir: "${CACHE_DIR}/project_datasets/cifar100"
 
 subtasks:
   - name: "default"

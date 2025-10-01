@@ -15,7 +15,7 @@ dataset:
   name: "tydiqa"
   source: "huggingface"
   path: "tydiqa"
-  cache_dir: "/root/benchmarks/universal-model-benchmarks/datasets/cache"
+  cache_dir: "/root/benchmarks/universal-model-benchmarks/project_datasets/cache"
 
 subtasks:
   - name: "primary_task"

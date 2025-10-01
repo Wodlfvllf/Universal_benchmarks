@@ -6,7 +6,7 @@ benchmark:
   paper: Hendrycks et al., 2021
   version: '1.0'
 dataset:
-  cache_dir: ${CACHE_DIR}/datasets/mmlu
+  cache_dir: ${CACHE_DIR}/project_datasets/mmlu
   path: cais/mmlu
   source: huggingface
 evaluation:

@@ -13,7 +13,7 @@ dataset:
   name: "mmmlu"
   source: "huggingface"
   path: "openai/MMMLU"
-  cache_dir: "/root/benchmarks/universal-model-benchmarks/datasets/cache"
+  cache_dir: "/root/benchmarks/universal-model-benchmarks/project_datasets/cache"
 
 subtasks:
   - name: "de_abstract_algebra"

@@ -11,7 +11,7 @@ dataset:
   name: "wmt23"
   source: "huggingface"
   path: "haoranxu/WMT23-Test"
-  cache_dir: "/root/benchmarks/universal-model-benchmarks/datasets/cache"
+  cache_dir: "/root/benchmarks/universal-model-benchmarks/project_datasets/cache"
 
 subtasks:
   - name: "de-en"

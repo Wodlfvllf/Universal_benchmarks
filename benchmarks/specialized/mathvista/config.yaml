@@ -14,7 +14,7 @@ dataset:
   name: "mathvista"
   source: "huggingface"
   path: "AI4Math/MathVista"
-  cache_dir: "/root/benchmarks/universal-model-benchmarks/datasets/cache"
+  cache_dir: "/root/benchmarks/universal-model-benchmarks/project_datasets/cache"
 
 subtasks:
   - name: "default"

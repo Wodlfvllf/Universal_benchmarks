@@ -9,7 +9,7 @@ benchmark:
 dataset:
   source: "huggingface"
   path: "AILab-CVC/SEED-Bench-2"
-  cache_dir: "${CACHE_DIR}/datasets/seed_bench"
+  cache_dir: "${CACHE_DIR}/project_datasets/seed_bench"
 
 subtasks:
   - name: "default"
