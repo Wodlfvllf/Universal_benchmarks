@@ -1,7 +1,16 @@
 from benchmarks.base_runner import BenchmarkRunner
-from typing import Dict, Optional
+from benchmarks.registry import BenchmarkRegistry
 
-class SuperglueRunner(BenchmarkRunner):
-    def __init__(self, model_name: str, model_config: Optional[Dict] = None):
-        config_path = "configs/benchmark_configs/superglue.yaml"
-        super().__init__(config_path, model_name, model_config)
+class SuperGlueRunner(BenchmarkRunner):
+    def __init__(self, model_name: str, model_config: dict = None):
+        super().__init__(
+            config_path="configs/benchmark_configs/superglue.yaml",
+            model_name=model_name,
+            model_config=model_config
+        )
+
+BenchmarkRegistry.register(
+    name="superglue",
+    category="llm",
+    runner_class=SuperGlueRunner
+)
