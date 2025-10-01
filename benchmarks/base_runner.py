@@ -17,11 +17,11 @@ class BenchmarkConfig:
     """Configuration for a benchmark run"""
     name: str
     version: str
-    subtasks: List[Dict[str, Any]]
     dataset_config: Dict[str, Any]
     evaluation_config: Dict[str, Any]
     output_config: Dict[str, Any]
-    
+    subtasks: Optional[List[Dict[str, Any]]] = None
+
     @classmethod
     def from_yaml(cls, path: str):
         with open(path, 'r') as f:
@@ -29,7 +29,7 @@ class BenchmarkConfig:
         return cls(
             name=config['benchmark']['name'],
             version=config['benchmark']['version'],
-            subtasks=config['subtasks'],
+            subtasks=config.get('subtasks'),
             dataset_config=config['dataset'],
             evaluation_config=config['evaluation'],
             output_config=config['output']
@@ -45,14 +45,13 @@ class BenchmarkRunner:
         
     def load_data(self, subtask_config: Dict) -> Dict:
         """Load dataset for a subtask"""
-        dataset = load_dataset(
-            self.config.dataset_config['path'],
-            subtask_config['dataset_config'],
+        return DatasetRegistry.get_dataset(
+            self.config.dataset_config['name'],
+            name=subtask_config['dataset_config'],
             cache_dir=self.config.dataset_config.get('cache_dir')
         )
-        return dataset
         
-    def run_subtask(self, subtask_config: Dict) -> Dict:
+    def run_subtask(self, subtask_config: Dict, split: str = 'validation') -> Dict:
         """Execute a single subtask"""
         logger.info(f"Running subtask: {subtask_config['name']}")
         
@@ -64,7 +63,7 @@ class BenchmarkRunner:
         
         # Prepare inputs
         inputs = task.prepare_inputs(
-            dataset['validation'], 
+            dataset[split], 
             input_columns=subtask_config['input_columns'],
             label_column=subtask_config.get('label_column')
         )
@@ -73,7 +72,7 @@ class BenchmarkRunner:
         predictions = task.predict(
             self.model,
             inputs,
-            batch_size=self.config.evaluation_config['batch_size']
+            batch_size=self.config.evaluation_config.get('batch_size', 32)
         )
         
         # Calculate metrics
@@ -87,18 +86,23 @@ class BenchmarkRunner:
         return {
             'task': subtask_config['name'],
             'metrics': metrics,
-            'predictions': [p.predictions for p in predictions] if self.config.output_config['save_raw_predictions'] else None
+            'predictions': [p.predictions for p in predictions] if self.config.output_config.get('save_raw_predictions') else None
         }
         
     def run(self) -> Dict:
         """Execute all subtasks in the benchmark"""
         logger.info(f"Starting benchmark: {self.config.name} v{self.config.version}")
         
-        for subtask_config in self.config.subtasks:
-            result = self.run_subtask(subtask_config)
-            self.results[subtask_config['name']] = result
+        if self.config.subtasks:
+            for subtask_config in self.config.subtasks:
+                result = self.run_subtask(subtask_config)
+                self.results[subtask_config['name']] = result
+        else:
+            # Treat the benchmark as a single task
+            result = self.run_subtask(self.config.dataset_config)
+            self.results[self.config.name] = result
             
-        if self.config.output_config['aggregate_subtasks']:
+        if self.config.output_config.get('aggregate_subtasks') and self.config.subtasks:
             self.results['aggregate'] = self.aggregate_results()
             
         self.save_results()
@@ -126,8 +130,10 @@ class BenchmarkRunner:
         import json
         from datetime import datetime
         
+        output_dir = self.config.output_config.get('output_dir', 'results')
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        output_path = Path(f"results/{self.config.name}_{self.model.config.model_name.replace('/', '_')}_{timestamp}.json")
+        model_name = self.model.config.model_name.replace('/', '_')
+        output_path = Path(f"{output_dir}/{self.config.name}_{model_name}_{timestamp}.json")
         output_path.parent.mkdir(parents=True, exist_ok=True)
         
         with open(output_path, 'w') as f:
