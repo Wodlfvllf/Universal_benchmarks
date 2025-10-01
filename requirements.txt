@@ -10,3 +10,4 @@ Pillow
 pyyaml
 rouge_score
 nltk
+sentence_transformers

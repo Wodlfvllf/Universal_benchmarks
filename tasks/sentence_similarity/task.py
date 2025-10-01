@@ -41,9 +41,10 @@ class SentenceSimilarityTask(BaseTask):
     def predict(self, model: Any, inputs: List[TaskInput], 
                batch_size: int = 32) -> List[TaskOutput]:
         """Generate sentence similarity predictions"""
-        if not isinstance(model, SentenceTransformer):
+        if not hasattr(model, 'model') or not isinstance(model.model, SentenceTransformer):
             raise ValueError("SentenceSimilarityTask requires a SentenceTransformer model")
 
+        sentence_model = model.model
         outputs = []
         
         for i in range(0, len(inputs), batch_size):
@@ -52,8 +53,8 @@ class SentenceSimilarityTask(BaseTask):
             sentences1 = [inp.data[0] for inp in batch]
             sentences2 = [inp.data[1] for inp in batch]
             
-            embeddings1 = model.encode(sentences1, convert_to_tensor=True)
-            embeddings2 = model.encode(sentences2, convert_to_tensor=True)
+            embeddings1 = sentence_model.encode(sentences1, convert_to_tensor=True)
+            embeddings2 = sentence_model.encode(sentences2, convert_to_tensor=True)
             
             similarities = cos_sim(embeddings1, embeddings2)
             
