@@ -150,12 +150,14 @@ class HuggingFaceModel(BaseModel):
         # Map to labels if provided
         if labels:
             predictions = [labels[pred] for pred in predictions]
-            
-        return [ModelOutput(
+
+        model_outputs = [ModelOutput(
             predictions=predictions[i],
             logits=logits[i],
             probabilities=probabilities[i]
         ) for i in range(len(predictions))]
+
+        return model_outputs[0] if single_input else model_outputs
         
     def embed(self,
              inputs: Union[str, List[str]],
