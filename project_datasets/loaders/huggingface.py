@@ -52,7 +52,7 @@ class HuggingFaceLoader(DatasetLoader):
         # Save to cache if not streaming
         if not streaming:
             dataset.save_to_disk(str(cache_path))
-            self.save_metadata(dataset, identifier)
+            self.save_metadata(dataset, identifier, cache_path)
 
         return dataset
 

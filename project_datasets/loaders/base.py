@@ -29,7 +29,7 @@ class DatasetLoader(ABC):
         key_string = "_".join(key_parts)
         return hashlib.md5(key_string.encode()).hexdigest()
 
-    def save_metadata(self, dataset: Any, identifier: str):
+    def save_metadata(self, dataset: Any, identifier: str, cache_path: Path):
         """Save dataset metadata"""
         metadata = {
             'identifier': identifier,
@@ -38,7 +38,8 @@ class DatasetLoader(ABC):
             'size': self.get_dataset_size(dataset)
         }
 
-        metadata_path = self.cache_dir / f"{identifier}_metadata.json"
+        metadata_path = cache_path / "metadata.json"
+        metadata_path.parent.mkdir(parents=True, exist_ok=True)
         with open(metadata_path, 'w') as f:
             json.dump(metadata, f, indent=2)
 
