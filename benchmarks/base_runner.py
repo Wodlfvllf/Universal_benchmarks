@@ -47,7 +47,7 @@ class BenchmarkRunner:
     def load_data(self, subtask_config: Dict) -> Dict:
         """Load dataset for a subtask"""
         return DatasetRegistry.get_dataset(
-            self.config.dataset_config['path'],
+            self.config.name.lower(),
             name=subtask_config['dataset_config'],
             cache_dir=self.config.dataset_config.get('cache_dir')
         )
