@@ -1,6 +1,9 @@
 import argparse
 import importlib
 import pkgutil
+import sys
+import os
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from benchmarks.registry import BenchmarkRegistry
 
 def main():
