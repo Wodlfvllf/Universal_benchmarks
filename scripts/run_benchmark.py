@@ -1,7 +1,7 @@
 import argparse
+import importlib
+import pkgutil
 from benchmarks.registry import BenchmarkRegistry
-from benchmarks.llm.glue.runner import GlueBenchmarkRunner
-from benchmarks.multilingual.wmt23.runner import WMT23BenchmarkRunner
 
 def main():
     parser = argparse.ArgumentParser()
@@ -12,9 +12,10 @@ def main():
     
     args = parser.parse_args()
 
-    BenchmarkRegistry.register('glue', 'llm', GlueBenchmarkRunner)
-    BenchmarkRegistry.register('wmt23', 'multilingual', WMT23BenchmarkRunner)
-    
+    # Dynamically import and register benchmarks
+    for _, name, _ in pkgutil.walk_packages(['benchmarks']):
+        importlib.import_module(f'benchmarks.{name}')
+
     # Get benchmark runner
     runner_class = BenchmarkRegistry.get_benchmark(args.benchmark)
     
