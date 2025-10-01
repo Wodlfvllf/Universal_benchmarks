@@ -25,7 +25,6 @@ class NLITask(BaseTask):
         labels = None
         if label_column and label_column in dataset.column_names:
             labels = dataset[label_column]
-            labels = [self.label_map[label] for label in labels]
         
         for i in range(len(premise)):
             inputs.append(TaskInput(
