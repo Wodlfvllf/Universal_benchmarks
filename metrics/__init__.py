@@ -5,6 +5,7 @@ from .classification import (
 from .generation import (
     ROUGEMetric, BLEUMetric, BERTScoreMetric, METEORMetric
 )
+from .chrf import CHRFMetric
 from .question_answering import (
     ExactMatchMetric, F1ScoreQAMetric
 )

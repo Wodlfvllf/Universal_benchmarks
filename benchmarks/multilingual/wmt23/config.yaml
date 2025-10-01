@@ -1,0 +1,110 @@
+
+benchmark:
+  name: "multilingual/wmt23"
+  version: "1.0"
+  description: "A benchmark for machine translation on the WMT23 dataset."
+  category: "multilingual"
+  paper: "Kocmi et al., 2023"
+  official_url: "https://www.wmt-news.net/archives/2023"
+
+dataset:
+  name: "wmt23"
+  source: "huggingface"
+  path: "haoranxu/WMT23-Test"
+  cache_dir: "/root/benchmarks/universal-model-benchmarks/datasets/cache"
+
+subtasks:
+  - name: "de-en"
+    task_type: "translation"
+    dataset_config: "de-en"
+    metrics: ["bleu", "chrf"]
+    input_columns: ["source"]
+    label_column: "target"
+  - name: "en-cs"
+    task_type: "translation"
+    dataset_config: "en-cs"
+    metrics: ["bleu", "chrf"]
+    input_columns: ["source"]
+    label_column: "target"
+  - name: "en-de"
+    task_type: "translation"
+    dataset_config: "en-de"
+    metrics: ["bleu", "chrf"]
+    input_columns: ["source"]
+    label_column: "target"
+  - name: "en-ja"
+    task_type: "translation"
+    dataset_config: "en-ja"
+    metrics: ["bleu", "chrf"]
+    input_columns: ["source"]
+    label_column: "target"
+  - name: "fr-de"
+    task_type: "translation"
+    dataset_config: "fr-de"
+    metrics: ["bleu", "chrf"]
+    input_columns: ["source"]
+    label_column: "target"
+  - name: "gu-en"
+    task_type: "translation"
+    dataset_config: "gu-en"
+    metrics: ["bleu", "chrf"]
+    input_columns: ["source"]
+    label_column: "target"
+  - name: "he-en"
+    task_type: "translation"
+    dataset_config: "he-en"
+    metrics: ["bleu", "chrf"]
+    input_columns: ["source"]
+    label_column: "target"
+  - name: "hi-en"
+    task_type: "translation"
+    dataset_config: "hi-en"
+    metrics: ["bleu", "chrf"]
+    input_columns: ["source"]
+    label_column: "target"
+  - name: "ja-en"
+    task_type: "translation"
+    dataset_config: "ja-en"
+    metrics: ["bleu", "chrf"]
+    input_columns: ["source"]
+    label_column: "target"
+  - name: "km-en"
+    task_type: "translation"
+    dataset_config: "km-en"
+    metrics: ["bleu", "chrf"]
+    input_columns: ["source"]
+    label_column: "target"
+  - name: "ru-en"
+    task_type: "translation"
+    dataset_config: "ru-en"
+    metrics: ["bleu", "chrf"]
+    input_columns: ["source"]
+    label_column: "target"
+  - name: "ta-en"
+    task_type: "translation"
+    dataset_config: "ta-en"
+    metrics: ["bleu", "chrf"]
+    input_columns: ["source"]
+    label_column: "target"
+  - name: "vi-en"
+    task_type: "translation"
+    dataset_config: "vi-en"
+    metrics: ["bleu", "chrf"]
+    input_columns: ["source"]
+    label_column: "target"
+  - name: "zh-en"
+    task_type: "translation"
+    dataset_config: "zh-en"
+    metrics: ["bleu", "chrf"]
+    input_columns: ["source"]
+    label_column: "target"
+
+evaluation:
+  batch_size: 8
+  use_cache: true
+
+output:
+  format: "json"
+  save_raw_predictions: false
+  aggregate_subtasks: false
+  output_dir: "/root/benchmarks/universal-model-benchmarks/results/raw"

@@ -1,6 +1,7 @@
 import argparse
 from benchmarks.registry import BenchmarkRegistry
 from benchmarks.llm.glue.runner import GlueBenchmarkRunner
+from benchmarks.multilingual.wmt23.runner import WMT23BenchmarkRunner
 
 def main():
     parser = argparse.ArgumentParser()
@@ -12,6 +13,7 @@ def main():
     args = parser.parse_args()
 
     BenchmarkRegistry.register('glue', 'llm', GlueBenchmarkRunner)
+    BenchmarkRegistry.register('wmt23', 'multilingual', WMT23BenchmarkRunner)
     
     # Get benchmark runner
     runner_class = BenchmarkRegistry.get_benchmark(args.benchmark)
