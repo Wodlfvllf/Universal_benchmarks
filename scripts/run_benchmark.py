@@ -6,6 +6,18 @@ import os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from benchmarks.registry import BenchmarkRegistry
 
+def import_submodules(package, recursive=True):
+    """ Import all submodules of a module, recursively, including subpackages """
+    if isinstance(package, str):
+        package = importlib.import_module(package)
+    results = {}
+    for loader, name, is_pkg in pkgutil.walk_packages(package.__path__):
+        full_name = package.__name__ + '.' + name
+        results[full_name] = importlib.import_module(full_name)
+        if recursive and is_pkg:
+            results.update(import_submodules(full_name))
+    return results
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--benchmark', required=True, help='Benchmark name')
@@ -16,8 +28,7 @@ def main():
     args = parser.parse_args()
 
     # Dynamically import and register benchmarks
-    for _, name, _ in pkgutil.walk_packages(['benchmarks']):
-        importlib.import_module(f'benchmarks.{name}')
+    import_submodules('benchmarks')
 
     # Get benchmark runner
     runner_class = BenchmarkRegistry.get_benchmark(args.benchmark)
