@@ -45,6 +45,7 @@ def register_all_tasks():
     from tasks.regression.task import RegressionTask
     from tasks.nli.task import NLITask
     from tasks.sentence_similarity.task import SentenceSimilarityTask
+    from tasks.boolq.task import BoolQTask
     
     TaskRegistry.register('classification', ClassificationTask)
     TaskRegistry.register('multiple_choice', MultipleChoiceQATask)
@@ -65,5 +66,6 @@ def register_all_tasks():
     TaskRegistry.register('regression', RegressionTask)
     TaskRegistry.register('nli', NLITask)
     TaskRegistry.register('sentence_similarity', SentenceSimilarityTask)
+    TaskRegistry.register('boolq', BoolQTask)
     
 register_all_tasks()

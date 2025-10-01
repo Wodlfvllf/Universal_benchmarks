@@ -13,59 +13,10 @@ dataset:
   
 subtasks:
   - name: "boolq"
-    task_type: "multiple_choice"
+    task_type: "boolq"
     dataset_config: "boolq"
     metrics: ["accuracy"]
     input_columns: ["question", "passage"]
-    label_column: "label"
-    
-  - name: "cb"
-    task_type: "nli"
-    dataset_config: "cb"
-    metrics: ["accuracy", "f1"]
-    input_columns: ["premise", "hypothesis"]
-    label_column: "label"
-    
-  - name: "copa"
-    task_type: "multiple_choice"
-    dataset_config: "copa"
-    metrics: ["accuracy"]
-    input_columns: ["premise", "choice1", "choice2"]
-    label_column: "label"
-    
-  - name: "multirc"
-    task_type: "multiple_choice"
-    dataset_config: "multirc"
-    metrics: ["exact_match"]
-    input_columns: ["paragraph", "question", "answer"]
-    label_column: "label"
-    
-  - name: "record"
-    task_type: "extractive_qa"
-    dataset_config: "record"
-    metrics: ["exact_match", "f1"]
-    input_columns: ["passage", "query"]
-    label_column: "answers"
-    
-  - name: "rte"
-    task_type: "nli"
-    dataset_config: "rte"
-    metrics: ["accuracy"]
-    input_columns: ["premise", "hypothesis"]
-    label_column: "label"
-    
-  - name: "wic"
-    task_type: "classification"
-    dataset_config: "wic"
-    metrics: ["accuracy"]
-    input_columns: ["sentence1", "sentence2", "word"]
-    label_column: "label"
-    
-  - name: "wsc"
-    task_type: "multiple_choice"
-    dataset_config: "wsc"
-    metrics: ["accuracy"]
-    input_columns: ["text", "span1_text", "span2_text"]
     label_column: "label"
 
 evaluation:
