@@ -6,17 +6,20 @@ import os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from benchmarks.registry import BenchmarkRegistry
 
-def import_submodules(package, recursive=True):
+def import_submodules(package):
     """ Import all submodules of a module, recursively, including subpackages """
-    if isinstance(package, str):
-        package = importlib.import_module(package)
-    results = {}
-    for loader, name, is_pkg in pkgutil.walk_packages(package.__path__):
-        full_name = package.__name__ + '.' + name
-        results[full_name] = importlib.import_module(full_name)
-        if recursive and is_pkg:
-            results.update(import_submodules(full_name))
-    return results
+    import sys
+    import os
+    import importlib
+
+    package_dir = package.replace('.', '/')
+    for root, _, files in os.walk(package_dir):
+        for file in files:
+            if file.endswith('.py') and not file.startswith('__'):
+                module_path = os.path.join(root, file)
+                module_name = module_path.replace('/', '.').replace('.py', '')
+                print(f"Importing {module_name}")
+                importlib.import_module(module_name)
 
 def main():
     parser = argparse.ArgumentParser()
