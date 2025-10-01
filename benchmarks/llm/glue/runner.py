@@ -9,7 +9,6 @@ class GlueRunner(BenchmarkRunner):
             model_config=model_config
         )
 
-print("Registering glue benchmark")
 BenchmarkRegistry.register(
     name="glue",
     category="llm",

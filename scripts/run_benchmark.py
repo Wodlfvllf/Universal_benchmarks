@@ -18,7 +18,6 @@ def import_submodules(package):
             if file.endswith('.py') and not file.startswith('__'):
                 module_path = os.path.join(root, file)
                 module_name = module_path.replace('/', '.').replace('.py', '')
-                print(f"Importing {module_name}")
                 importlib.import_module(module_name)
 
 def main():
