@@ -45,8 +45,6 @@ class HuggingFaceLoader(DatasetLoader):
             identifier,
             name=name,
             split=split,
-            cache_dir=str(self.cache_dir / 'downloads'),
-            use_auth_token=self.use_auth_token,
             streaming=streaming,
             **kwargs
         )

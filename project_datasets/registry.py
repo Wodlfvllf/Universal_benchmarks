@@ -61,12 +61,12 @@ class DatasetRegistry:
     }
     
     @classmethod
-    def get_dataset(cls, name: str, **kwargs) -> Any:
+    def get_dataset(cls, dataset_name: str, **kwargs) -> Any:
         """Load dataset by name"""
-        if name not in cls.DATASET_CONFIGS:
-            raise ValueError(f"Unknown dataset: {name}")
+        if dataset_name not in cls.DATASET_CONFIGS:
+            raise ValueError(f"Unknown dataset: {dataset_name}")
             
-        config = cls.DATASET_CONFIGS[name].copy()
+        config = cls.DATASET_CONFIGS[dataset_name].copy()
         loader_name = config.pop('loader')
         
         if loader_name not in cls.LOADERS:
