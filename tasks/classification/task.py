@@ -59,10 +59,17 @@ class ClassificationTask(BaseTask):
         for i in range(0, len(inputs), batch_size):
             batch = inputs[i:i+batch_size]
             
-            batch_outputs = model.classify(
-                [inp.data for inp in batch],
-                candidate_labels=list(self.label_map.keys())
-            )
+            if hasattr(model, 'classify'):
+                # Direct classification method
+                batch_outputs = model.classify(
+                    [inp.data for inp in batch],
+                    labels=list(self.label_map.keys())
+                )
+            else:
+                # Use generation and parse
+                prompts = [self.format_prompt(inp) for inp in batch]
+                raw_outputs = model.generate(prompts)
+                batch_outputs = [self.parse_output(out) for out in raw_outputs]
             
             outputs.extend(batch_outputs)
             
