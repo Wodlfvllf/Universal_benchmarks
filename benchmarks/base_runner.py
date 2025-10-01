@@ -102,8 +102,13 @@ class BenchmarkRunner:
         
         if self.config.subtasks:
             for subtask_config in self.config.subtasks:
-                result = self.run_subtask(subtask_config)
-                self.results[subtask_config['name']] = result
+                if "validation_sets" in subtask_config:
+                    for split in subtask_config["validation_sets"]:
+                        result = self.run_subtask(subtask_config, split=split)
+                        self.results[f"{subtask_config['name']}_{split}"] = result
+                else:
+                    result = self.run_subtask(subtask_config)
+                    self.results[subtask_config['name']] = result
         else:
             # Treat the benchmark as a single task
             result = self.run_subtask(self.config.dataset_config)
