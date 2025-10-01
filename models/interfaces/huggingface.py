@@ -28,7 +28,7 @@ class HuggingFaceModel(BaseModel):
         config = AutoConfig.from_pretrained(self.config.model_name)
         
         if self.config.model_type == ModelType.TEXT:
-            if hasattr(config, 'num_labels'):
+            if hasattr(config, 'num_labels') and config.num_labels > 1:
                 # Classification model
                 self.model = AutoModelForSequenceClassification.from_pretrained(
                     self.config.model_name,
@@ -46,6 +46,18 @@ class HuggingFaceModel(BaseModel):
                     device_map="auto" if self.config.device == "cuda" else None,
                     trust_remote_code=True
                 )
+        elif self.config.model_type == ModelType.REGRESSION:
+            self.model = AutoModelForSequenceClassification.from_pretrained(
+                self.config.model_name,
+                num_labels=1,
+                cache_dir=self.config.cache_dir,
+                torch_dtype=self._get_torch_dtype(),
+                device_map="auto" if self.config.device == "cuda" else None,
+                trust_remote_code=True
+            )
+        elif self.config.model_type == ModelType.SENTENCE_TRANSFORMER:
+            from sentence_transformers import SentenceTransformer
+            self.model = SentenceTransformer(self.config.model_name, cache_folder=self.config.cache_dir)
                 
         # Move to device if needed
         if self.config.device == "cuda" and torch.cuda.is_available():

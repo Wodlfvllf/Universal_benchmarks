@@ -11,6 +11,8 @@ class ModelType(Enum):
     MULTIMODAL = "multimodal"
     CODE = "code"
     AUDIO = "audio"
+    REGRESSION = "regression"
+    SENTENCE_TRANSFORMER = "sentence_transformer"
 
 @dataclass
 class ModelConfig:

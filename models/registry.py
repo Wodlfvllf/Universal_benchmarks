@@ -58,6 +58,12 @@ class ModelRegistry:
             'model_name': 'mistralai/Mistral-7B-v0.1',
             'max_length': 32768
         },
+        'sentence-transformers/all-MiniLM-L6-v2': {
+            'implementation': 'huggingface',
+            'model_type': ModelType.SENTENCE_TRANSFORMER,
+            'model_name': 'sentence-transformers/all-MiniLM-L6-v2',
+            'max_length': 512
+        },
         
         # Vision-Language Models
         'gpt-4-vision': {

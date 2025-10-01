@@ -34,7 +34,8 @@ subtasks:
     label_column: "label"
     
   - name: "stsb"
-    task_type: "regression"
+    task_type: "sentence_similarity"
+    model: "sentence-transformers/all-MiniLM-L6-v2"
     dataset_config: "stsb"
     metrics: ["pearson", "spearman"]
     input_columns: ["sentence1", "sentence2"]

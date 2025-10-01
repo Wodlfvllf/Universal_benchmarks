@@ -41,7 +41,9 @@ class BenchmarkRunner:
     
     def __init__(self, config_path: str, model_name: str, model_config: Optional[Dict] = None):
         self.config = BenchmarkConfig.from_yaml(config_path)
-        self.model = ModelRegistry.get_model(model_name, model_config)
+        self.model_name = model_name
+        self.model_config = model_config
+        self.model = None
         self.results = {}
         
     def load_data(self, subtask_config: Dict) -> Dict:
@@ -55,6 +57,10 @@ class BenchmarkRunner:
     def run_subtask(self, subtask_config: Dict, split: str = 'validation') -> Dict:
         """Execute a single subtask"""
         logger.info(f"Running subtask: {subtask_config['name']}")
+
+        model_name = subtask_config.get('model', self.model_name)
+        if self.model is None or self.model.config.model_name != model_name:
+            self.model = ModelRegistry.get_model(model_name, self.model_config)
         
         # Load task implementation
         task = TaskRegistry.get_task(subtask_config['task_type'])

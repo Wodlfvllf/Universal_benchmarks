@@ -49,9 +49,14 @@ class RegressionTask(BaseTask):
         for i in range(0, len(inputs), batch_size):
             batch = inputs[i:i+batch_size]
             
-            prompts = [self.format_prompt(inp) for inp in batch]
-            raw_outputs = model.generate(prompts)
-            batch_outputs = [self.parse_output(out) for out in raw_outputs]
+            if hasattr(model, 'classify'):
+                batch_outputs = model.classify(
+                    [inp.data for inp in batch]
+                )
+            else:
+                prompts = [self.format_prompt(inp) for inp in batch]
+                raw_outputs = model.generate(prompts)
+                batch_outputs = [self.parse_output(out) for out in raw_outputs]
             
             outputs.extend(batch_outputs)
             
